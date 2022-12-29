@@ -312,7 +312,7 @@ class DataSourceApi extends DataSource {
       });
     }
 
-    Response r = await get(Uri.https(domain, path).replace(queryParameters: urlQuery), headers: headers);
+    Response r = await get(Uri.parse(domain + path).replace(queryParameters: urlQuery), headers: headers);
 
     if (r.statusCode == 200) {
       if (exportType == DataGridExportType.asyncEmail) {
