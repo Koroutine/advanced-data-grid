@@ -1,7 +1,7 @@
 import 'dart:collection';
 import 'dart:convert';
 
-import 'package:esim_core/widgets/datagrid/types.dart';
+import 'types.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';

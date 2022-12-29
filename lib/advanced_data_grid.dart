@@ -1,11 +1,12 @@
 library advanced_data_grid;
+
 import 'dart:async';
 
 import 'package:data_table_2/data_table_2.dart';
-import 'package:esim_core/widgets/datagrid/datasource.dart';
-import 'package:esim_core/widgets/datagrid/export_data.dart';
-import 'package:esim_core/widgets/datagrid/filter_text.dart';
-import 'package:esim_core/widgets/datagrid/types.dart';
+import 'datasource.dart';
+import 'export_data.dart';
+import 'filter_text.dart';
+import 'types.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

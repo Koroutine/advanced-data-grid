@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:html' as html;
 
-import 'package:esim_core/widgets/datagrid/datasource.dart';
-import 'package:esim_core/widgets/datagrid/types.dart';
-import 'package:esim_core/widgets/datagrid/widget.dart';
+import 'datasource.dart';
+import 'types.dart';
+import 'advanced_data_grid.dart';
 import 'package:flutter/material.dart';
 import 'package:csv/csv.dart';
 
