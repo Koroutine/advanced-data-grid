@@ -14,12 +14,14 @@ class DataSourceResponse {
   num page = 0;
   num pageSize = 0;
   num total = 0;
+  Map<String, dynamic> json;
 
   DataSourceResponse(
     this.items,
     this.page,
     this.pageSize,
     this.total,
+    this.json,
   );
 
   factory DataSourceResponse.fromJson(String body, String? responseListKey, num currentPage) {
@@ -43,7 +45,7 @@ class DataSourceResponse {
       items = ((json as List).map((e) => e as Map<String, dynamic>).toList());
     }
 
-    return DataSourceResponse(items, currentPage, json['pageSize'] as num, json['rows'] as num);
+    return DataSourceResponse(items, currentPage, json['pageSize'] as num, json['rows'] as num, json);
   }
 }
 
@@ -316,7 +318,7 @@ class DataSourceApi extends DataSource {
 
     if (r.statusCode == 200) {
       if (exportType == DataGridExportType.asyncEmail) {
-        return DataSourceResponse([], 1, 1, 1);
+        return DataSourceResponse([], 1, 1, 1, {});
       }
 
       var data = DataSourceResponse.fromJson(r.body, responseListKey, _page);

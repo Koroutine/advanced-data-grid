@@ -81,6 +81,8 @@ class DataGrid extends StatefulWidget {
     this.primaryColor,
     this.overrideElevatedButtonStyle,
     this.overrideTextButtonStyle,
+    this.fixedPageLimit,
+    this.hidePageSelection = false,
   });
 
   final DataSource source;
@@ -103,6 +105,8 @@ class DataGrid extends StatefulWidget {
   final Color? primaryColor;
   final ButtonStyle? overrideElevatedButtonStyle;
   final ButtonStyle? overrideTextButtonStyle;
+  final int? fixedPageLimit;
+  final bool hidePageSelection;
 
   @override
   State<DataGrid> createState() => _DataGridState();
@@ -314,7 +318,7 @@ class _DataGridState extends State<DataGrid> {
                           }
                         : null,
                     cells: widget.builders.asMap().entries.map((entry) {
-                      var cellData;
+                      dynamic cellData;
 
                       if (entry.value.isEdge ?? false) {
                         cellData = data["edges"][entry.value.column];
@@ -426,52 +430,50 @@ class _DataGridState extends State<DataGrid> {
                                 ? Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 5),
                                     child: TextButton(
-                                        onPressed: () {
-                                          showDialog(
-                                              context: context,
-                                              builder: (BuildContext context) {
-                                                return ExportDataGridModal(
-                                                  title: widget.title ?? "Data",
-                                                  columns: widget.builders.where((column) => column.includeInExport == true).toList(),
-                                                  source: widget.source,
-                                                  exportTypes: widget.exportTypes,
-                                                  overrideButtonStyle: widget.overrideElevatedButtonStyle,
-                                                  primaryColor: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
-                                                );
-                                              });
-                                        },
-                                        child: Container(
-                                          padding: const EdgeInsets.fromLTRB(16, 5, 16, 5),
-                                          height: 36,
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Icon(
-                                                Icons.download,
-                                                color: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
-                                                size: 24,
-                                              ),
-                                              Container(
-                                                padding: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width >= _mobileWidth ? 10 : 0, 0,
-                                                    MediaQuery.of(context).size.width >= _mobileWidth ? 6 : 0, 0),
-                                                child: MediaQuery.of(context).size.width >= _mobileWidth
-                                                    ? const Text(
-                                                        "EXPORT",
-                                                        style: TextStyle(color: Color.fromRGBO(105, 105, 105, 1), fontSize: 14),
-                                                      )
-                                                    : Container(),
-                                              ),
-                                            ],
-                                          ),
+                                      onPressed: () {
+                                        showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return ExportDataGridModal(
+                                                title: widget.title ?? "Data",
+                                                columns: widget.builders.where((column) => column.includeInExport == true).toList(),
+                                                source: widget.source,
+                                                exportTypes: widget.exportTypes,
+                                                overrideButtonStyle: widget.overrideElevatedButtonStyle,
+                                                primaryColor: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
+                                              );
+                                            });
+                                      },
+                                      style: widget.overrideTextButtonStyle != null
+                                          ? widget.overrideTextButtonStyle!.copyWith(padding: MaterialStateProperty.all(EdgeInsets.zero))
+                                          : Theme.of(context).textButtonTheme.style != null
+                                              ? Theme.of(context).textButtonTheme.style!.copyWith(padding: MaterialStateProperty.all(EdgeInsets.zero))
+                                              : TextButton.styleFrom().copyWith(padding: MaterialStateProperty.all(EdgeInsets.zero)),
+                                      child: Container(
+                                        padding: const EdgeInsets.fromLTRB(16, 5, 16, 5),
+                                        height: 36,
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(
+                                              Icons.download,
+                                              color: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
+                                              size: 24,
+                                            ),
+                                            Container(
+                                              padding: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width >= _mobileWidth ? 10 : 0, 0,
+                                                  MediaQuery.of(context).size.width >= _mobileWidth ? 6 : 0, 0),
+                                              child: MediaQuery.of(context).size.width >= _mobileWidth
+                                                  ? const Text(
+                                                      "EXPORT",
+                                                      style: TextStyle(color: Color.fromRGBO(105, 105, 105, 1), fontSize: 14),
+                                                    )
+                                                  : Container(),
+                                            ),
+                                          ],
                                         ),
-                                        style: widget.overrideTextButtonStyle != null
-                                            ? widget.overrideTextButtonStyle!.copyWith(padding: MaterialStateProperty.all(EdgeInsets.zero))
-                                            : Theme.of(context).textButtonTheme.style != null
-                                                ? Theme.of(context)
-                                                    .textButtonTheme
-                                                    .style!
-                                                    .copyWith(padding: MaterialStateProperty.all(EdgeInsets.zero))
-                                                : TextButton.styleFrom().copyWith(padding: MaterialStateProperty.all(EdgeInsets.zero))),
+                                      ),
+                                    ),
                                   )
                                 : Container(),
                             Row(
@@ -541,6 +543,14 @@ class _DataGridState extends State<DataGrid> {
                                                 },
                                               );
                                             },
+                                            style: widget.overrideTextButtonStyle != null
+                                                ? widget.overrideTextButtonStyle!.copyWith(padding: MaterialStateProperty.all(EdgeInsets.zero))
+                                                : Theme.of(context).textButtonTheme.style != null
+                                                    ? Theme.of(context)
+                                                        .textButtonTheme
+                                                        .style!
+                                                        .copyWith(padding: MaterialStateProperty.all(EdgeInsets.zero))
+                                                    : TextButton.styleFrom().copyWith(padding: MaterialStateProperty.all(EdgeInsets.zero)),
                                             child: Container(
                                               padding: const EdgeInsets.fromLTRB(16, 5, 16, 5),
                                               height: 36,
@@ -565,14 +575,6 @@ class _DataGridState extends State<DataGrid> {
                                                 ],
                                               ),
                                             ),
-                                            style: widget.overrideTextButtonStyle != null
-                                                ? widget.overrideTextButtonStyle!.copyWith(padding: MaterialStateProperty.all(EdgeInsets.zero))
-                                                : Theme.of(context).textButtonTheme.style != null
-                                                    ? Theme.of(context)
-                                                        .textButtonTheme
-                                                        .style!
-                                                        .copyWith(padding: MaterialStateProperty.all(EdgeInsets.zero))
-                                                    : TextButton.styleFrom().copyWith(padding: MaterialStateProperty.all(EdgeInsets.zero)),
                                           )
                                     : Container(),
                               ],
@@ -596,38 +598,43 @@ class _DataGridState extends State<DataGrid> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MediaQuery.of(context).size.width > _mobileWidth ? MainAxisAlignment.end : MainAxisAlignment.center,
                           children: [
-                            MediaQuery.of(context).size.width > _mobileWidth
-                                ? const Text("Rows per page:", style: TextStyle(color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12))
-                                : Container(),
-                            MediaQuery.of(context).size.width > _mobileWidth ? const SizedBox(width: 10) : Container(),
-                            MediaQuery.of(context).size.width > _mobileWidth
-                                ? SizedBox(
-                                    width: 50,
-                                    child: DropdownButtonHideUnderline(
-                                      child: DropdownButton<num>(
-                                        isDense: true,
-                                        isExpanded: true,
-                                        borderRadius: BorderRadius.circular(6),
-                                        items: const [
-                                          DropdownMenuItem<num>(
-                                              value: 15, child: Text("15", style: TextStyle(color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12))),
-                                          DropdownMenuItem<num>(
-                                              value: 30, child: Text("30", style: TextStyle(color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12))),
-                                          DropdownMenuItem<num>(
-                                              value: 60, child: Text("60", style: TextStyle(color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12))),
-                                          DropdownMenuItem<num>(
-                                              value: 100,
-                                              child: Text("100", style: TextStyle(color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12))),
-                                        ],
-                                        value: widget.source.pageSize,
-                                        onChanged: (limit) {
-                                          widget.source.setPageLimit(limit ?? 10);
-                                        },
-                                      ),
-                                    ),
+                            widget.fixedPageLimit == null && MediaQuery.of(context).size.width > _mobileWidth
+                                ? Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Text("Rows per page:", style: TextStyle(color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12)),
+                                      Container(
+                                        width: 50,
+                                        margin: const EdgeInsets.only(left: 10, right: 16),
+                                        child: DropdownButtonHideUnderline(
+                                          child: DropdownButton<num>(
+                                            isDense: true,
+                                            isExpanded: true,
+                                            borderRadius: BorderRadius.circular(6),
+                                            items: const [
+                                              DropdownMenuItem<num>(
+                                                  value: 15,
+                                                  child: Text("15", style: TextStyle(color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12))),
+                                              DropdownMenuItem<num>(
+                                                  value: 30,
+                                                  child: Text("30", style: TextStyle(color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12))),
+                                              DropdownMenuItem<num>(
+                                                  value: 60,
+                                                  child: Text("60", style: TextStyle(color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12))),
+                                              DropdownMenuItem<num>(
+                                                  value: 100,
+                                                  child: Text("100", style: TextStyle(color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12))),
+                                            ],
+                                            value: widget.source.pageSize,
+                                            onChanged: (limit) {
+                                              widget.source.setPageLimit(limit ?? 15);
+                                            },
+                                          ),
+                                        ),
+                                      )
+                                    ],
                                   )
                                 : Container(),
-                            MediaQuery.of(context).size.width > _mobileWidth ? const SizedBox(width: 16) : Container(),
                             Text(
                               "${MediaQuery.of(context).size.width > _mobileWidth ? "Showing " : ""}${(widget.source.currentPage * widget.source.pageSize) - (widget.source.pageSize - 1)}-${((widget.source.currentPage * widget.source.pageSize) - widget.source.pageSize) + widget.source.items.length} of ${widget.source.totalCount}",
                               style: const TextStyle(
@@ -636,17 +643,19 @@ class _DataGridState extends State<DataGrid> {
                               ),
                             ),
                             const SizedBox(width: 16),
-                            IconButton(
-                              onPressed: widget.source.currentPage > 1
-                                  ? () {
-                                      widget.source.loadPage(1);
-                                    }
-                                  : null,
-                              icon: const Icon(
-                                Icons.skip_previous_rounded,
-                              ),
-                              color: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
-                            ),
+                            !widget.hidePageSelection
+                                ? IconButton(
+                                    onPressed: widget.source.currentPage > 1
+                                        ? () {
+                                            widget.source.loadPage(1);
+                                          }
+                                        : null,
+                                    icon: const Icon(
+                                      Icons.skip_previous_rounded,
+                                    ),
+                                    color: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
+                                  )
+                                : Container(),
                             IconButton(
                               onPressed: widget.source.currentPage > 1
                                   ? () {
@@ -659,17 +668,19 @@ class _DataGridState extends State<DataGrid> {
                               color: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
                             ),
                             for (var p in widget.source.pagination)
-                              TextButton(
-                                onPressed: () => widget.source.loadPage(p),
-                                child: Text(
-                                  "$p",
-                                  style: TextStyle(
-                                    fontWeight: p == widget.source.currentPage ? FontWeight.bold : FontWeight.normal,
-                                    color:
-                                        p == widget.source.currentPage ? widget.primaryColor ?? Theme.of(context).colorScheme.primary : Colors.grey,
-                                  ),
-                                ),
-                              ),
+                              !widget.hidePageSelection
+                                  ? TextButton(
+                                      onPressed: () => widget.source.loadPage(p),
+                                      child: Text(
+                                        "$p",
+                                        style: TextStyle(
+                                          fontWeight: p == widget.source.currentPage ? FontWeight.bold : FontWeight.normal,
+                                          color: p == widget.source.currentPage
+                                              ? widget.primaryColor ?? Theme.of(context).colorScheme.primary
+                                              : Colors.grey,
+                                        ),
+                                      ))
+                                  : Container(),
                             IconButton(
                               onPressed: widget.source.currentPage < widget.source.lastPage
                                   ? () {
@@ -681,17 +692,19 @@ class _DataGridState extends State<DataGrid> {
                               ),
                               color: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
                             ),
-                            IconButton(
-                              onPressed: widget.source.currentPage < widget.source.lastPage
-                                  ? () {
-                                      widget.source.loadPage(widget.source.lastPage);
-                                    }
-                                  : null,
-                              icon: const Icon(
-                                Icons.skip_next_rounded,
-                              ),
-                              color: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
-                            ),
+                            !widget.hidePageSelection
+                                ? IconButton(
+                                    onPressed: widget.source.currentPage < widget.source.lastPage
+                                        ? () {
+                                            widget.source.loadPage(widget.source.lastPage);
+                                          }
+                                        : null,
+                                    icon: const Icon(
+                                      Icons.skip_next_rounded,
+                                    ),
+                                    color: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
+                                  )
+                                : Container(),
                           ],
                         )
                       : Container(),
