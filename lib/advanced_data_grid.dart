@@ -423,9 +423,14 @@ class _DataGridState extends State<DataGrid> {
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                            Row(
-                              children: widget.actions ?? [],
-                            ),
+                            widget.actions != null
+                                ? Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                                    child: Row(
+                                      children: widget.actions!,
+                                    ),
+                                  )
+                                : Container(),
                             widget.exportTypes.isNotEmpty
                                 ? Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -636,7 +641,9 @@ class _DataGridState extends State<DataGrid> {
                                   )
                                 : Container(),
                             Text(
-                              "${MediaQuery.of(context).size.width > _mobileWidth ? "Showing " : ""}${(widget.source.currentPage * widget.source.pageSize) - (widget.source.pageSize - 1)}-${((widget.source.currentPage * widget.source.pageSize) - widget.source.pageSize) + widget.source.items.length} of ${widget.source.totalCount}",
+                              widget.hidePageSelection
+                                  ? "${widget.source.totalCount} rows"
+                                  : "${MediaQuery.of(context).size.width > _mobileWidth ? "Showing " : ""}${(widget.source.currentPage * widget.source.pageSize) - (widget.source.pageSize - 1)}-${((widget.source.currentPage * widget.source.pageSize) - widget.source.pageSize) + widget.source.items.length} of ${widget.source.totalCount}",
                               style: const TextStyle(
                                 color: Color.fromRGBO(105, 105, 105, 1),
                                 fontSize: 12,
