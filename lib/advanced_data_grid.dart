@@ -42,19 +42,43 @@ class DataGridColumn {
     this.exportReplacementString,
   });
 
+  /// Column's key name returned in the DataSource.
   final String column;
+
+  /// Disables sorting on this Column.
   final bool? noSorting;
+
+  /// When true, searches for the Column's value inside of an "Edges" object.
   final bool? isEdge;
+
+  /// Enable Filtering on the Column.
   final DataFilterType? filter;
+
+  /// Populates Drop Down options to filter the column when filter is set to DataFilterType.DROPDOWN.
   final List<Map<String, dynamic>>? filterDropDownOptions;
+
+  /// Builder for the Column's cells.
   final DataGridColumnBuilder builder;
+
+  /// Column Title to be displayed in the Grid.
   final String title;
+
+  /// Unit name displayed when filtering the column, for example: Filter Items by 2 "items".
   final String? unitName;
+
+  /// Include Column inside of Table Exports.
   final bool includeInExport;
+
+  /// Replace the Value of the Column in the export with this value.
   final DataGridExportString? exportReplacementString;
 
+  /// Resize the Column relative to others, takes ColumnSize.S, ColumnSize.M and ColumnSize.L from DataTable2.
   final ColumnSize columnSize;
+
+  /// Size the Column to a Fixed Width value in pixels.
   final double? fixedWidth;
+
+  /// Align Data inside of the Column's Title and Cells.
   final Alignment alignment;
 }
 
@@ -85,27 +109,70 @@ class DataGrid extends StatefulWidget {
     this.hidePageSelection = false,
   });
 
+  /// Data Source for the Table.
   final DataSource source;
+
+  /// List of Columns for the Table.
   final List<DataGridColumn> builders;
+
+  /// Title for the DataGrid, displayed above the Grid.
   final String? title;
+
+  /// Sub Title for the DataGrid, displayed beside the Title.
   final String? subTitle;
+
+  /// Actions (Widgets) displayed in the heading.
   final List<Widget>? actions;
+
+  /// Wrap DataGrid with a Card.
   final bool wrapWithCard;
+
+  /// Minimum width for the Data Table. Will scroll if minWidth exceeds the DataGrid's parent's width.
   final double? minWidth;
+
+  /// Builder for Column Titles, title is taken from each DataGridColumn.
   final DataGridTitleBuilder titleBuilder;
+
+  /// Enable Text Highlighting for the Grid.
   final bool enableTextSelection;
+
+  /// Allow Multiple Columns to be sorted at once.
   final bool enableMultiSort;
+
+  /// When provided, will add a Search Box to the top right of the Grid.
   final DataGridColumn? mainSearchColumn;
+
+  /// Display Checkboxes beside each row for Row Selection.
   final bool showCheckboxColumn;
+
+  /// Identifier used for Row Selection.
   final String? identifierColumnName;
+
+  /// List of currently selected Rows by their Column Identifiers.
   final List<String>? selectedRows;
+
+  /// Function called when a Row is selected/unselected.
   final Function? onSelectionChange;
+
+  /// Function called when tapping on a Row.
   final Function? onRowTap;
+
+  /// If provided, will enable Export functionality from the Grid via the specified types.
   final List<DataGridExportType> exportTypes;
+
+  /// Override the Primary Colour of the Grid. By default will use Theme Primary Colour.
   final Color? primaryColor;
+
+  /// Override all Elevated Buttons on the Grid. By default will use Theme Elevated Button Style.
   final ButtonStyle? overrideElevatedButtonStyle;
+
+  /// Override all Text Buttons on the Grid. By default will use Theme Text Button Style.
   final ButtonStyle? overrideTextButtonStyle;
+
+  /// Disables adjustment of Page Size on the Grid.
   final int? fixedPageLimit;
+
+  /// Hides the Specific Page selection buttons, leaving just Previous and Next buttons.
   final bool hidePageSelection;
 
   @override

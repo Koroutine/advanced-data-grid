@@ -225,15 +225,6 @@ abstract class DataSource extends ChangeNotifier {
 }
 
 class DataSourceApi extends DataSource {
-  final String domain;
-  final String path;
-  final String? responseListKey;
-  final Map<String, String> defaultSortOrder;
-  final Map<String, List<String>>? query;
-  final String? tokenSharedPref;
-  final Function? onInvalidToken;
-  final Map<String, List<String>>? exportQueryParameter;
-
   DataSourceApi({
     required this.domain,
     required this.path,
@@ -244,6 +235,30 @@ class DataSourceApi extends DataSource {
     this.onInvalidToken,
     this.exportQueryParameter,
   }) : super(0, 15, defaultSortOrder, {});
+
+  /// Domain Name of the API to call including http/https.
+  final String domain;
+
+  /// Path of API to call.
+  final String path;
+
+  /// Key Name in response JSON that holds the Rows.
+  final String? responseListKey;
+
+  /// Sort Order to apply to the API Call by default.
+  final Map<String, String> defaultSortOrder;
+
+  /// List of Query Parameters to add to each API Call.
+  final Map<String, List<String>>? query;
+
+  /// Shared Prefs name where Bearer Auth token is stored.
+  final String? tokenSharedPref;
+
+  /// Function to call if token has expired/is invalid.
+  final Function? onInvalidToken;
+
+  /// Extra Parameter to add when exporting using DataGridExportType.asyncEmail.
+  final Map<String, List<String>>? exportQueryParameter;
 
   @override
   Future<DataSourceResponse?> loader(DataGridExportType? exportType) async {
