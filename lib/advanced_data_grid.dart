@@ -82,7 +82,7 @@ class DataGridColumn {
   /// Align Data inside of the Column's Title and Cells.
   final Alignment alignment;
 
-  /// Override column name when filtering via the DataSource.
+  /// Override column name when filtering or sorting via the DataSource.
   final String? filterColumnName;
 }
 
@@ -198,8 +198,88 @@ class _DataGridState extends State<DataGrid> {
 
   List<DataColumn2> get _headers {
     var titleCells = widget.builders.asMap().entries.map((entry) {
-      var sortDirection = widget.source.getSort(entry.value.column);
+      var sortDirection = widget.source.getSort(entry.value.filterColumnName ?? entry.value.column);
       var hasFilter = widget.source.hasFilters(entry.value.filterColumnName ?? entry.value.column);
+
+      Widget titleContent = Row(
+        children: [
+          Expanded(
+            child: Align(
+              alignment: entry.value.alignment,
+              child: widget.titleBuilder(entry.key, entry.value.title),
+            ),
+          ),
+          entry.value.filter == null
+              ? Container()
+              : Container(
+                  padding: EdgeInsets.only(right: sortDirection == "asc" || sortDirection == "desc" ? 10 : 0),
+                  child: PopupMenuButton(
+                    enableFeedback: false,
+                    enabled: true,
+                    padding: const EdgeInsets.all(0),
+                    child: hasFilter
+                        ? Icon(Icons.filter_alt_off_rounded, color: widget.primaryColor ?? Theme.of(context).colorScheme.primary)
+                        : const Icon(Icons.filter_alt_rounded, color: Colors.grey),
+                    itemBuilder: (context) {
+                      return [
+                        PopupMenuItem(
+                          enabled: false,
+                          child: FilterText(
+                            data: entry.value,
+                            filterType: entry.value.filter!,
+                            source: widget.source,
+                            primaryColor: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
+                          ),
+                        )
+                      ];
+                    },
+                  ),
+                ),
+          sortDirection == "asc" || sortDirection == "desc"
+              ? SizedBox(
+                  width: 26,
+                  child: Stack(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: sortDirection == "asc"
+                            ? Icon(Icons.arrow_upward_rounded, color: widget.primaryColor ?? Theme.of(context).colorScheme.primary)
+                            : sortDirection == "desc"
+                                ? Icon(Icons.arrow_downward_rounded, color: widget.primaryColor ?? Theme.of(context).colorScheme.primary)
+                                : Container(),
+                      ),
+                      widget.source.columnSorts.length > 1
+                          ? Align(
+                              alignment: Alignment.centerRight,
+                              child: Container(
+                                height: 12,
+                                width: 12,
+                                margin: const EdgeInsets.only(bottom: 24),
+                                decoration: BoxDecoration(
+                                  color: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    (widget.source.columnSorts.keys.toList().indexOf(entry.value.filterColumnName ?? entry.value.column) + 1)
+                                        .toString(),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 8,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                            )
+                          : Container(),
+                    ],
+                  ),
+                )
+              : Container(),
+        ],
+      );
 
       return DataColumn2(
         size: entry.value.columnSize,
@@ -210,106 +290,28 @@ class _DataGridState extends State<DataGrid> {
               child: entry.value.noSorting ?? false
                   ? Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: Align(
-                        alignment: entry.value.alignment,
-                        child: widget.titleBuilder(entry.key, entry.value.title),
-                      ),
+                      child: titleContent,
                     )
                   : TextButton(
-                      style: TextButton.styleFrom(foregroundColor: Colors.black),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.black,
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                      ),
                       onPressed: () {
                         if (sortDirection == "asc") {
-                          widget.source.removeSort(entry.value.column);
+                          widget.source.removeSort(entry.value.filterColumnName ?? entry.value.column);
                           return;
                         }
 
                         if (widget.enableMultiSort) {
-                          widget.source.addSort(entry.value.column, sortDirection == "desc" ? "asc" : "desc");
+                          widget.source.addSort(entry.value.filterColumnName ?? entry.value.column, sortDirection == "desc" ? "asc" : "desc");
                         } else {
-                          widget.source.replaceAllSorts(entry.value.column, sortDirection == "desc" ? "asc" : "desc");
+                          widget.source.replaceAllSorts(entry.value.filterColumnName ?? entry.value.column, sortDirection == "desc" ? "asc" : "desc");
                         }
                       },
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Align(
-                              alignment: entry.value.alignment,
-                              child: widget.titleBuilder(entry.key, entry.value.title),
-                            ),
-                          ),
-                          entry.value.filter == null
-                              ? Container()
-                              : Container(
-                                  padding: EdgeInsets.only(right: sortDirection == "asc" || sortDirection == "desc" ? 10 : 0),
-                                  child: PopupMenuButton(
-                                    enableFeedback: false,
-                                    enabled: true,
-                                    padding: const EdgeInsets.all(0),
-                                    child: hasFilter
-                                        ? Icon(Icons.filter_alt_off_rounded, color: widget.primaryColor ?? Theme.of(context).colorScheme.primary)
-                                        : const Icon(Icons.filter_alt_rounded, color: Colors.grey),
-                                    itemBuilder: (context) {
-                                      return [
-                                        PopupMenuItem(
-                                          enabled: false,
-                                          child: FilterText(
-                                            data: entry.value,
-                                            filterType: entry.value.filter!,
-                                            source: widget.source,
-                                            primaryColor: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
-                                          ),
-                                        )
-                                      ];
-                                    },
-                                  ),
-                                ),
-                          sortDirection == "asc" || sortDirection == "desc"
-                              ? SizedBox(
-                                  width: 26,
-                                  child: Stack(
-                                    children: [
-                                      Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: sortDirection == "asc"
-                                            ? Icon(Icons.arrow_upward_rounded, color: widget.primaryColor ?? Theme.of(context).colorScheme.primary)
-                                            : sortDirection == "desc"
-                                                ? Icon(Icons.arrow_downward_rounded,
-                                                    color: widget.primaryColor ?? Theme.of(context).colorScheme.primary)
-                                                : Container(),
-                                      ),
-                                      widget.source.columnSorts.length > 1
-                                          ? Align(
-                                              alignment: Alignment.centerRight,
-                                              child: Container(
-                                                height: 12,
-                                                width: 12,
-                                                margin: const EdgeInsets.only(bottom: 24),
-                                                decoration: BoxDecoration(
-                                                  color: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
-                                                  borderRadius: BorderRadius.circular(8),
-                                                ),
-                                                child: Center(
-                                                  child: Text(
-                                                    (widget.source.columnSorts.keys.toList().indexOf(entry.value.column) + 1).toString(),
-                                                    style: const TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 8,
-                                                      fontWeight: FontWeight.w700,
-                                                    ),
-                                                    textAlign: TextAlign.center,
-                                                  ),
-                                                ),
-                                              ),
-                                            )
-                                          : Container(),
-                                    ],
-                                  ),
-                                )
-                              : Container(),
-                        ],
-                      ),
+                      child: titleContent,
                     ),
-            )
+            ),
           ],
         ),
       );
@@ -328,9 +330,12 @@ class _DataGridState extends State<DataGrid> {
         onChanged: (value) {
           _searchDebouncer.run(() {
             if (_searchController.text != "") {
-              widget.source.setFilters(widget.mainSearchColumn!.column, [DataFilter(operator: null, value: _searchController.text)]);
+              widget.source.setFilters(
+                widget.mainSearchColumn!.filterColumnName ?? widget.mainSearchColumn!.column,
+                [DataFilter(operator: null, value: _searchController.text)],
+              );
             } else {
-              widget.source.removefilters(widget.mainSearchColumn!.column);
+              widget.source.removefilters(widget.mainSearchColumn!.filterColumnName ?? widget.mainSearchColumn!.column);
             }
           });
         },
