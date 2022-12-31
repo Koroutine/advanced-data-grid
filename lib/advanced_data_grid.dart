@@ -199,7 +199,7 @@ class _DataGridState extends State<DataGrid> {
   List<DataColumn2> get _headers {
     var titleCells = widget.builders.asMap().entries.map((entry) {
       var sortDirection = widget.source.getSort(entry.value.column);
-      var hasFilter = widget.source.hasFilters(entry.value.column);
+      var hasFilter = widget.source.hasFilters(entry.value.filterColumnName ?? entry.value.column);
 
       return DataColumn2(
         size: entry.value.columnSize,
