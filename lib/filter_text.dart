@@ -34,7 +34,7 @@ class _FilterTextState extends State<FilterText> {
   void initState() {
     super.initState();
 
-    var loadedFilters = widget.source.getFilters(widget.data.column);
+    var loadedFilters = widget.source.getFilters(widget.data.filterColumnName ?? widget.data.column);
     var filters = loadedFilters == null || loadedFilters.isEmpty ? [DataFilter(operator: DataFilterOperator.EQ)] : loadedFilters;
 
     if (widget.filterType == DataFilterType.DROPDOWN) {
@@ -73,14 +73,14 @@ class _FilterTextState extends State<FilterText> {
           if (_valueControllers[i].text != "") {
             filters.add(DataFilter(operator: widget.filterType != DataFilterType.STRING ? _operators[i] : null, value: _valueControllers[i].text));
           } else {
-            widget.source.removefilter(i, widget.data.column);
+            widget.source.removefilter(i, widget.data.filterColumnName ?? widget.data.column);
           }
         }
         break;
     }
 
     if (filters.isNotEmpty) {
-      widget.source.setFilters(widget.data.column, filters);
+      widget.source.setFilters(widget.data.filterColumnName ?? widget.data.column, filters);
     }
 
     Navigator.of(context, rootNavigator: true).pop();
@@ -88,7 +88,7 @@ class _FilterTextState extends State<FilterText> {
 
   void clear() {
     widget.source.removefilters(
-      widget.data.column,
+      widget.data.filterColumnName ?? widget.data.column,
     );
 
     Navigator.of(context, rootNavigator: true).pop();

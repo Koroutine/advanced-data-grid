@@ -40,6 +40,7 @@ class DataGridColumn {
     this.unitName,
     this.includeInExport = false,
     this.exportReplacementString,
+    this.filterColumnName,
   });
 
   /// Column's key name returned in the DataSource.
@@ -80,6 +81,9 @@ class DataGridColumn {
 
   /// Align Data inside of the Column's Title and Cells.
   final Alignment alignment;
+
+  /// Override column name when filtering via the DataSource.
+  final String? filterColumnName;
 }
 
 class DataGrid extends StatefulWidget {
