@@ -45,7 +45,7 @@ class _FilterTextState extends State<FilterText> {
 
     if (widget.filterType == DataFilterType.BOOLEAN && filters.isNotEmpty) {
       setState(() {
-        _boolSelection = filters.first.value as bool? ?? false;
+        _boolSelection = filters.first.value == "true" ? true : false;
       });
     }
 
@@ -118,6 +118,7 @@ class _FilterTextState extends State<FilterText> {
                       Expanded(
                         child: Text(widget.data.title),
                       ),
+                      const SizedBox(width: 10),
                       CupertinoSwitch(
                         value: _boolSelection,
                         onChanged: (bool v) {
