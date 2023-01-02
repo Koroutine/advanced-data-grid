@@ -1,3 +1,4 @@
+import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 
 import 'datasource.dart';
@@ -167,7 +168,7 @@ class _FilterDateState extends State<FilterDate> {
                   width: 240,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: Colors.grey[400],
+                    color: Colors.grey[200],
                     borderRadius: BorderRadius.circular(5),
                   ),
                   child: Row(
@@ -175,29 +176,50 @@ class _FilterDateState extends State<FilterDate> {
                       Expanded(
                         child: TextButton(
                           child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Expanded(
-                                child: Text(
-                                  _dateTimeRange != null
-                                      ? DateFormat('dd/MM/yyyy').format(_dateTimeRange!.start)
-                                      : _filterRange
-                                          ? "Select Start Date"
-                                          : "Select Date",
-                                  textAlign: TextAlign.center,
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10),
+                                child: Icon(
+                                  Icons.calendar_month_rounded,
+                                  color: widget.primaryColor,
                                 ),
                               ),
-                              _filterRange ? Container(padding: const EdgeInsets.symmetric(horizontal: 10), child: const Text(" - ")) : Container(),
-                              _filterRange
-                                  ? Expanded(
+                              Expanded(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    SizedBox(
+                                      height: 40,
                                       child: Text(
-                                        _dateTimeRange != null ? DateFormat('dd/MM/yyyy').format(_dateTimeRange!.end) : "Select End Date",
+                                        _dateTimeRange != null
+                                            ? DateFormat('dd/MM/yyyy').format(_dateTimeRange!.start)
+                                            : _filterRange
+                                                ? "Select Start Date"
+                                                : "Select Date",
                                         textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: _dateTimeRange != null ? Colors.black87 : Colors.black54,
+                                          fontWeight: _dateTimeRange != null ? FontWeight.bold : FontWeight.w400,
+                                        ),
                                       ),
-                                    )
-                                  : Container(),
+                                    ),
+                                    _filterRange ? const Divider() : Container(),
+                                    _filterRange
+                                        ? SizedBox(
+                                            height: 40,
+                                            child: Text(
+                                              _dateTimeRange != null ? DateFormat('dd/MM/yyyy').format(_dateTimeRange!.end) : "Select End Date",
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          )
+                                        : Container(),
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
-                          onPressed: () => _filterRange ? _presentDateRangePicker : _presentDatePicker,
+                          onPressed: () => _filterRange ? _presentDateRangePicker() : _presentDatePicker(),
                         ),
                       ),
                     ],
