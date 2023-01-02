@@ -145,16 +145,24 @@ class _FilterDateState extends State<FilterDate> {
           child: Row(
             children: [
               const Expanded(
-                child: Text("Filter Range?"),
+                child: Text(
+                  "Filter Range?",
+                  style: TextStyle(
+                    color: Colors.black87,
+                  ),
+                ),
               ),
               const SizedBox(width: 10),
-              CupertinoSwitch(
-                value: _filterRange,
-                onChanged: (bool v) {
-                  setState(() {
-                    _filterRange = v;
-                  });
-                },
+              Transform.scale(
+                scale: 0.8,
+                child: CupertinoSwitch(
+                  value: _filterRange,
+                  onChanged: (bool v) {
+                    setState(() {
+                      _filterRange = v;
+                    });
+                  },
+                ),
               ),
             ],
           ),
@@ -166,7 +174,6 @@ class _FilterDateState extends State<FilterDate> {
               Expanded(
                 child: Container(
                   width: 240,
-                  height: 40,
                   decoration: BoxDecoration(
                     color: Colors.grey[200],
                     borderRadius: BorderRadius.circular(5),
@@ -191,16 +198,18 @@ class _FilterDateState extends State<FilterDate> {
                                   children: [
                                     SizedBox(
                                       height: 40,
-                                      child: Text(
-                                        _dateTimeRange != null
-                                            ? DateFormat('dd/MM/yyyy').format(_dateTimeRange!.start)
-                                            : _filterRange
-                                                ? "Select Start Date"
-                                                : "Select Date",
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          color: _dateTimeRange != null ? Colors.black87 : Colors.black54,
-                                          fontWeight: _dateTimeRange != null ? FontWeight.bold : FontWeight.w400,
+                                      child: Center(
+                                        child: Text(
+                                          _dateTimeRange != null
+                                              ? DateFormat('dd/MM/yyyy').format(_dateTimeRange!.start)
+                                              : _filterRange
+                                                  ? "Select Start Date"
+                                                  : "Select Date",
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            color: _dateTimeRange != null ? Colors.black87 : Colors.black54,
+                                            fontWeight: _dateTimeRange != null ? FontWeight.bold : FontWeight.w400,
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -208,9 +217,11 @@ class _FilterDateState extends State<FilterDate> {
                                     _filterRange
                                         ? SizedBox(
                                             height: 40,
-                                            child: Text(
-                                              _dateTimeRange != null ? DateFormat('dd/MM/yyyy').format(_dateTimeRange!.end) : "Select End Date",
-                                              textAlign: TextAlign.center,
+                                            child: Center(
+                                              child: Text(
+                                                _dateTimeRange != null ? DateFormat('dd/MM/yyyy').format(_dateTimeRange!.end) : "Select End Date",
+                                                textAlign: TextAlign.center,
+                                              ),
                                             ),
                                           )
                                         : Container(),

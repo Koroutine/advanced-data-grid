@@ -82,16 +82,24 @@ class _FilterBoolState extends State<FilterBool> {
           child: Row(
             children: [
               Expanded(
-                child: Text(widget.data.title),
+                child: Text(
+                  widget.data.title,
+                  style: const TextStyle(
+                    color: Colors.black87,
+                  ),
+                ),
               ),
               const SizedBox(width: 10),
-              CupertinoSwitch(
-                value: _boolSelection,
-                onChanged: (bool v) {
-                  setState(() {
-                    _boolSelection = v;
-                  });
-                },
+              Transform.scale(
+                scale: 0.8,
+                child: CupertinoSwitch(
+                  value: _boolSelection,
+                  onChanged: (bool v) {
+                    setState(() {
+                      _boolSelection = v;
+                    });
+                  },
+                ),
               ),
             ],
           ),
