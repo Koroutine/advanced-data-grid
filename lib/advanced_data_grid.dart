@@ -233,7 +233,7 @@ class _DataGridState extends State<DataGrid> {
                                   source: widget.source,
                                   primaryColor: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
                                 )
-                              : (entry.value.filter == DataFilterType.COUNTRY_CODE || entry.value.filter == DataFilterType.COUNTRY_NAME)
+                              : entry.value.filter == DataFilterType.COUNTRY_CODE
                                   ? FilterCountry(
                                       data: entry.value,
                                       filterType: entry.value.filter!,
