@@ -115,15 +115,18 @@ class _FilterCountryState extends State<FilterCountry> {
                       fontSize: 16,
                       fontFamily: "Montserrat",
                       fontWeight: FontWeight.w600,
+                      color: Colors.black87,
                     ),
                     textStyle: const TextStyle(
                       fontSize: 15,
                       fontFamily: "Montserrat",
+                      color: Colors.black87,
                     ),
                     searchStyle: const TextStyle(
                       fontSize: 15,
                       fontFamily: "Montserrat",
                       fontWeight: FontWeight.w600,
+                      color: Colors.black87,
                     ),
                   ),
                 ),
