@@ -45,7 +45,7 @@ class _FilterTextState extends State<FilterText> {
 
     if (widget.filterType == DataFilterType.BOOLEAN && filters.isNotEmpty) {
       setState(() {
-        _boolSelection = filters.first.value as bool;
+        _boolSelection = filters.first.value as bool? ?? false;
       });
     }
 
