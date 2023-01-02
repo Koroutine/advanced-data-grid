@@ -94,10 +94,12 @@ class _FilterDateState extends State<FilterDate> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 400.0, maxHeight: 800),
-              child: child,
-            )
+            Expanded(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 400.0, maxHeight: 800),
+                child: child,
+              ),
+            ),
           ],
         );
       },
