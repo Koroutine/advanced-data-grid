@@ -65,9 +65,7 @@ class _FilterTextState extends State<FilterText> {
           filters.add(DataFilter(operator: null, value: _dropDownSelection));
         }
         break;
-      case DataFilterType.BOOLEAN:
-        filters.add(DataFilter(operator: null, value: _boolSelection.toString()));
-        break;
+
       default:
         for (var i = 0; i < _valueControllers.length; i++) {
           if (_valueControllers[i].text != "") {
@@ -237,13 +235,15 @@ class _FilterTextState extends State<FilterText> {
                         ],
                       ),
           ),
-        /*IconButton(
-            onPressed: () {
-              setState(() {
-                _valueControllers.add(TextEditingController());
-              });
-            },
-            icon: const Icon(Icons.add_circle_outline_rounded)),*/
+        /*widget.filterType == DataFilterType.NUMBER
+            ? IconButton(
+                onPressed: () {
+                  setState(() {
+                    _valueControllers.add(TextEditingController());
+                  });
+                },
+                icon: const Icon(Icons.add_circle_outline_rounded))
+            : Container(),*/
         Row(
           children: [
             TextButton(

@@ -2,6 +2,8 @@ library advanced_data_grid;
 
 import 'dart:async';
 
+import 'package:advanced_data_grid/filter_bool.dart';
+import 'package:advanced_data_grid/filter_country.dart';
 import 'package:data_table_2/data_table_2.dart';
 import 'datasource.dart';
 import 'export_data.dart';
@@ -224,12 +226,26 @@ class _DataGridState extends State<DataGrid> {
                       return [
                         PopupMenuItem(
                           enabled: false,
-                          child: FilterText(
-                            data: entry.value,
-                            filterType: entry.value.filter!,
-                            source: widget.source,
-                            primaryColor: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
-                          ),
+                          child: entry.value.filter == DataFilterType.BOOLEAN
+                              ? FilterBool(
+                                  data: entry.value,
+                                  filterType: entry.value.filter!,
+                                  source: widget.source,
+                                  primaryColor: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
+                                )
+                              : (entry.value.filter == DataFilterType.COUNTRY_CODE || entry.value.filter == DataFilterType.COUNTRY_NAME)
+                                  ? FilterCountry(
+                                      data: entry.value,
+                                      filterType: entry.value.filter!,
+                                      source: widget.source,
+                                      primaryColor: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
+                                    )
+                                  : FilterText(
+                                      data: entry.value,
+                                      filterType: entry.value.filter!,
+                                      source: widget.source,
+                                      primaryColor: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
+                                    ),
                         )
                       ];
                     },
