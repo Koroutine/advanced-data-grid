@@ -40,7 +40,7 @@ class _FilterDateState extends State<FilterDate> {
     super.initState();
 
     var loadedFilters = widget.source.getFilters(widget.data.filterColumnName ?? widget.data.column);
-    var filters = loadedFilters == null || loadedFilters.isEmpty ? [DataFilter(operator: DataFilterOperator.EQ)] : loadedFilters;
+    var filters = loadedFilters == null || loadedFilters.isEmpty ? <DataFilter>[] : loadedFilters;
 
     if (filters.isNotEmpty) {
       DateTime? startDate = DateTime.tryParse(filters[0].value!);

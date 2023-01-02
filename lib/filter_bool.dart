@@ -33,7 +33,7 @@ class _FilterBoolState extends State<FilterBool> {
     super.initState();
 
     var loadedFilters = widget.source.getFilters(widget.data.filterColumnName ?? widget.data.column);
-    var filters = loadedFilters == null || loadedFilters.isEmpty ? [DataFilter(operator: DataFilterOperator.EQ)] : loadedFilters;
+    var filters = loadedFilters == null || loadedFilters.isEmpty ? <DataFilter>[] : loadedFilters;
 
     if (filters.isNotEmpty) {
       setState(() {
