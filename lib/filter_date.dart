@@ -89,6 +89,18 @@ class _FilterDateState extends State<FilterDate> {
       initialDateRange: _dateTimeRange,
       firstDate: DateTime(0000, 01, 01),
       lastDate: DateTime(9999, 12, 31),
+      builder: (context, child) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 400.0, maxHeight: 800),
+              child: child,
+            )
+          ],
+        );
+      },
     ).then((pickedRange) {
       if (pickedRange == null) {
         return;
