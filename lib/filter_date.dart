@@ -78,7 +78,7 @@ class _FilterDateState extends State<FilterDate> {
       setState(() {
         _dateTimeRange = DateTimeRange(
             start: DateTime(pickedDate.year, pickedDate.month, pickedDate.day),
-            end: DateTime(pickedDate.year, pickedDate.month, pickedDate.day + 1).subtract(const Duration(microseconds: 1)));
+            end: DateTime(pickedDate.year, pickedDate.month, pickedDate.day + 1).subtract(const Duration(milliseconds: 1)));
       });
     });
   }
@@ -96,7 +96,7 @@ class _FilterDateState extends State<FilterDate> {
       setState(() {
         _dateTimeRange = DateTimeRange(
             start: DateTime(pickedRange.start.year, pickedRange.start.month, pickedRange.start.day),
-            end: DateTime(pickedRange.end.year, pickedRange.end.month, pickedRange.end.day + 1).subtract(const Duration(microseconds: 1)));
+            end: DateTime(pickedRange.end.year, pickedRange.end.month, pickedRange.end.day + 1).subtract(const Duration(milliseconds: 1)));
       });
     });
   }
@@ -186,7 +186,7 @@ class _FilterDateState extends State<FilterDate> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10),
+                                padding: const EdgeInsets.only(right: 8),
                                 child: Icon(
                                   Icons.calendar_month_rounded,
                                   color: widget.primaryColor,
@@ -213,7 +213,7 @@ class _FilterDateState extends State<FilterDate> {
                                         ),
                                       ),
                                     ),
-                                    _filterRange ? const Divider() : Container(),
+                                    _filterRange ? const Divider(thickness: 2, height: 2) : Container(),
                                     _filterRange
                                         ? SizedBox(
                                             height: 40,
@@ -221,6 +221,10 @@ class _FilterDateState extends State<FilterDate> {
                                               child: Text(
                                                 _dateTimeRange != null ? DateFormat('dd/MM/yyyy').format(_dateTimeRange!.end) : "Select End Date",
                                                 textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  color: _dateTimeRange != null ? Colors.black87 : Colors.black54,
+                                                  fontWeight: _dateTimeRange != null ? FontWeight.bold : FontWeight.w400,
+                                                ),
                                               ),
                                             ),
                                           )
