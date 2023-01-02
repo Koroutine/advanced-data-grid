@@ -157,42 +157,6 @@ class _FilterDateState extends State<FilterDate> {
           padding: const EdgeInsets.only(top: 8.0),
           child: Row(
             children: [
-              const Expanded(
-                child: Text(
-                  "Filter Range?",
-                  style: TextStyle(
-                    color: Colors.black87,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Transform.scale(
-                scale: 0.8,
-                child: CupertinoSwitch(
-                  value: _filterRange,
-                  onChanged: (bool v) {
-                    setState(() {
-                      _filterRange = v;
-                    });
-
-                    if (v != true && _dateTimeRange != null) {
-                      setState(() {
-                        _dateTimeRange = DateTimeRange(
-                            start: DateTime(_dateTimeRange!.start.year, _dateTimeRange!.start.month, _dateTimeRange!.start.day),
-                            end: DateTime(_dateTimeRange!.start.year, _dateTimeRange!.start.month, _dateTimeRange!.start.day + 1)
-                                .subtract(const Duration(milliseconds: 1)));
-                      });
-                    }
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Row(
-            children: [
               Expanded(
                 child: Container(
                   width: 240,
@@ -263,6 +227,42 @@ class _FilterDateState extends State<FilterDate> {
                   ),
                 ),
               )
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Row(
+            children: [
+              const Expanded(
+                child: Text(
+                  "Date Range?",
+                  style: TextStyle(
+                    color: Colors.black87,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Transform.scale(
+                scale: 0.8,
+                child: CupertinoSwitch(
+                  value: _filterRange,
+                  onChanged: (bool v) {
+                    setState(() {
+                      _filterRange = v;
+                    });
+
+                    if (v != true && _dateTimeRange != null) {
+                      setState(() {
+                        _dateTimeRange = DateTimeRange(
+                            start: DateTime(_dateTimeRange!.start.year, _dateTimeRange!.start.month, _dateTimeRange!.start.day),
+                            end: DateTime(_dateTimeRange!.start.year, _dateTimeRange!.start.month, _dateTimeRange!.start.day + 1)
+                                .subtract(const Duration(milliseconds: 1)));
+                      });
+                    }
+                  },
+                ),
+              ),
             ],
           ),
         ),
