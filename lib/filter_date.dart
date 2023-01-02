@@ -91,8 +91,13 @@ class _FilterDateState extends State<FilterDate> {
       lastDate: DateTime(9999, 12, 31),
       builder: (context, child) {
         return Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 400.0, maxHeight: 800),
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 500, maxHeight: 768),
+            decoration: BoxDecoration(
+              borderRadius: MediaQuery.of(context).size.width > 500 || MediaQuery.of(context).size.height > 768
+                  ? BorderRadius.circular(5)
+                  : BorderRadius.circular(0),
+            ),
             child: child,
           ),
         );
@@ -169,6 +174,15 @@ class _FilterDateState extends State<FilterDate> {
                     setState(() {
                       _filterRange = v;
                     });
+
+                    if (v != true && _dateTimeRange != null) {
+                      setState(() {
+                        _dateTimeRange = DateTimeRange(
+                            start: DateTime(_dateTimeRange!.start.year, _dateTimeRange!.start.month, _dateTimeRange!.start.day),
+                            end: DateTime(_dateTimeRange!.start.year, _dateTimeRange!.start.month, _dateTimeRange!.start.day + 1)
+                                .subtract(const Duration(milliseconds: 1)));
+                      });
+                    }
                   },
                 ),
               ),
