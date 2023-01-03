@@ -69,8 +69,9 @@ abstract class DataSource extends ChangeNotifier {
   num _pageLimit;
   Map<String, String> _sort;
   Map<String, List<DataFilter>> _filter;
+  bool _isZeroIndexed = false;
 
-  DataSource(this._page, this._pageLimit, this._sort, this._filter);
+  DataSource(this._page, this._pageLimit, this._sort, this._filter, this._isZeroIndexed);
 
   UnmodifiableListView<Json> get items => UnmodifiableListView(_items);
   bool get isLoading => _isLoading;
@@ -198,7 +199,7 @@ abstract class DataSource extends ChangeNotifier {
       _items.clear();
       _isLoading = false;
       _currentTotal = 0;
-      _page = 1;
+      _page = _isZeroIndexed ? 0 : 1;
 
       notifyListeners();
       return;
@@ -234,7 +235,8 @@ class DataSourceApi extends DataSource {
     this.tokenSharedPref,
     this.onInvalidToken,
     this.exportQueryParameter,
-  }) : super(0, 15, defaultSortOrder, {});
+    this.isZeroIndexed = false,
+  }) : super(0, 15, defaultSortOrder, {}, isZeroIndexed);
 
   /// Domain Name of the API to call including http/https.
   final String domain;
@@ -260,6 +262,9 @@ class DataSourceApi extends DataSource {
   /// Extra Parameter to add when exporting using DataGridExportType.asyncEmail.
   final Map<String, List<String>>? exportQueryParameter;
 
+  /// Are Pages in the API Zero Indexed
+  final bool isZeroIndexed;
+
   @override
   Future<DataSourceResponse?> loader(DataGridExportType? exportType) async {
     late SharedPreferences prefs;
@@ -276,7 +281,7 @@ class DataSourceApi extends DataSource {
     switch (exportType) {
       case DataGridExportType.allPages:
         urlQuery = {
-          'page': ["1"],
+          'page': ["${_isZeroIndexed ? 0 : 1}"],
           'limit': ["$_currentTotal"],
           'sort': _sort.entries.map((e) => "${e.key}:${e.value}").toList(),
         };
