@@ -48,8 +48,11 @@ class _FilterDateState extends State<FilterDate> {
       DateTime? endDate = DateTime.tryParse(filters[1].value!);
 
       if (startDate != null && endDate != null) {
+        startDate = startDate.toLocal();
+        endDate = endDate.toLocal();
+
         setState(() {
-          _dateTimeRange = DateTimeRange(start: startDate, end: endDate);
+          _dateTimeRange = DateTimeRange(start: startDate!, end: endDate!);
         });
 
         if (!startDate.isSameDate(endDate)) {
@@ -77,8 +80,9 @@ class _FilterDateState extends State<FilterDate> {
       }
       setState(() {
         _dateTimeRange = DateTimeRange(
-            start: DateTime(pickedDate.year, pickedDate.month, pickedDate.day),
-            end: DateTime(pickedDate.year, pickedDate.month, pickedDate.day + 1).subtract(const Duration(milliseconds: 1)));
+          start: DateTime(pickedDate.year, pickedDate.month, pickedDate.day),
+          end: DateTime(pickedDate.year, pickedDate.month, pickedDate.day + 1).subtract(const Duration(milliseconds: 1)),
+        );
       });
     });
   }
@@ -118,8 +122,8 @@ class _FilterDateState extends State<FilterDate> {
     List<DataFilter> filters = [];
 
     if (_dateTimeRange != null) {
-      filters.add(DataFilter(operator: DataFilterOperator.GTE, value: _dateTimeRange!.start.toIso8601String()));
-      filters.add(DataFilter(operator: DataFilterOperator.LTE, value: _dateTimeRange!.end.toIso8601String()));
+      filters.add(DataFilter(operator: DataFilterOperator.GTE, value: _dateTimeRange!.start.toUtc().toIso8601String()));
+      filters.add(DataFilter(operator: DataFilterOperator.LTE, value: _dateTimeRange!.end.toUtc().toIso8601String()));
     }
 
     if (filters.isNotEmpty) {
