@@ -45,7 +45,7 @@ class DataSourceResponse {
       items = ((json as List).map((e) => e as Map<String, dynamic>).toList());
     }
 
-    return DataSourceResponse(items, currentPage, json['pageSize'] as num, json['rows'] as num, json);
+    return DataSourceResponse(items, currentPage, json['pageSize'] as num? ?? 15, json['rows'] as num? ?? 0, json);
   }
 }
 
