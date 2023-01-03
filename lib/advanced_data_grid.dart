@@ -531,7 +531,7 @@ class _DataGridState extends State<DataGrid> {
                                     ),
                                   )
                                 : Container(),
-                            widget.exportTypes.isNotEmpty
+                            widget.exportTypes.isNotEmpty && !widget.source.isLoading && widget.source.items.isNotEmpty
                                 ? Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 5),
                                     child: TextButton(
