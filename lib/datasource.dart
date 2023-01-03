@@ -88,6 +88,7 @@ abstract class DataSource extends ChangeNotifier {
     return _filter[column];
   }
 
+  bool get isZeroIndexed => _isZeroIndexed;
   num get currentPage => _page;
   num get lastPage => (_currentTotal / _pageLimit).ceil();
   num get pageSize => _pageLimit;

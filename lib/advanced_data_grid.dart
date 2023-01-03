@@ -196,7 +196,7 @@ class _DataGridState extends State<DataGrid> {
   void initState() {
     super.initState();
 
-    widget.source.loadPage(1);
+    widget.source.loadPage(widget.source.isZeroIndexed ? 0 : 1);
   }
 
   List<DataColumn2> get _headers {
@@ -634,9 +634,9 @@ class _DataGridState extends State<DataGrid> {
                                                                   onPressed: () {
                                                                     Navigator.of(context).pop();
                                                                   },
-                                                                  child: const Text("SEARCH"),
                                                                   style: widget.overrideElevatedButtonStyle ??
                                                                       (Theme.of(context).elevatedButtonTheme.style ?? ElevatedButton.styleFrom()),
+                                                                  child: const Text("SEARCH"),
                                                                 ),
                                                               ],
                                                             ),
@@ -752,9 +752,10 @@ class _DataGridState extends State<DataGrid> {
                             const SizedBox(width: 16),
                             !widget.hidePageSelection
                                 ? IconButton(
-                                    onPressed: widget.source.currentPage > 1
+                                    onPressed: (widget.source.isZeroIndexed && widget.source.currentPage > 0) ||
+                                            (!widget.source.isZeroIndexed && widget.source.currentPage > 1)
                                         ? () {
-                                            widget.source.loadPage(1);
+                                            widget.source.loadPage(widget.source.isZeroIndexed ? 0 : 1);
                                           }
                                         : null,
                                     icon: const Icon(
@@ -764,7 +765,8 @@ class _DataGridState extends State<DataGrid> {
                                   )
                                 : Container(),
                             IconButton(
-                              onPressed: widget.source.currentPage > 1
+                              onPressed: (widget.source.isZeroIndexed && widget.source.currentPage > 0) ||
+                                      (!widget.source.isZeroIndexed && widget.source.currentPage > 1)
                                   ? () {
                                       widget.source.loadPage(widget.source.currentPage - 1);
                                     }
