@@ -114,6 +114,7 @@ class DataGrid extends StatefulWidget {
     this.overrideTextButtonStyle,
     this.fixedPageLimit,
     this.hidePageSelection = false,
+    this.hideRowCount = false,
   });
 
   /// Data Source for the Table.
@@ -181,6 +182,9 @@ class DataGrid extends StatefulWidget {
 
   /// Hides the Specific Page selection buttons, leaving just Previous and Next buttons.
   final bool hidePageSelection;
+
+  /// Hide Row Count displayed in the Grid Footer
+  final bool hideRowCount;
 
   @override
   State<DataGrid> createState() => _DataGridState();
@@ -387,6 +391,25 @@ class _DataGridState extends State<DataGrid> {
         textInputAction: TextInputAction.none,
       ),
     );
+  }
+
+  List<Widget> _getPaginationButtons() {
+    List<Widget> paginationButtons = [];
+
+    for (var p in widget.source.pagination) {
+      TextButton(
+        onPressed: () => widget.source.loadPage(p),
+        child: Text(
+          "$p",
+          style: TextStyle(
+            fontWeight: p == widget.source.currentPage ? FontWeight.bold : FontWeight.normal,
+            color: p == widget.source.currentPage ? widget.primaryColor ?? Theme.of(context).colorScheme.primary : Colors.grey,
+          ),
+        ),
+      );
+    }
+
+    return paginationButtons;
   }
 
   @override
@@ -740,16 +763,18 @@ class _DataGridState extends State<DataGrid> {
                                     ],
                                   )
                                 : Container(),
-                            Text(
-                              widget.hidePageSelection
-                                  ? "${widget.source.totalCount} rows"
-                                  : "${MediaQuery.of(context).size.width > _mobileWidth ? "Showing " : ""}${(widget.source.currentPage * widget.source.pageSize) - (widget.source.pageSize - 1)}-${((widget.source.currentPage * widget.source.pageSize) - widget.source.pageSize) + widget.source.items.length} of ${widget.source.totalCount}",
-                              style: const TextStyle(
-                                color: Color.fromRGBO(105, 105, 105, 1),
-                                fontSize: 12,
-                              ),
-                            ),
-                            const SizedBox(width: 16),
+                            !widget.hideRowCount
+                                ? Text(
+                                    widget.hidePageSelection
+                                        ? "${widget.source.totalCount} rows"
+                                        : "${MediaQuery.of(context).size.width > _mobileWidth ? "Showing " : ""}${(widget.source.currentPage * widget.source.pageSize) - (widget.source.pageSize - 1)}-${((widget.source.currentPage * widget.source.pageSize) - widget.source.pageSize) + widget.source.items.length} of ${widget.source.totalCount}",
+                                    style: const TextStyle(
+                                      color: Color.fromRGBO(105, 105, 105, 1),
+                                      fontSize: 12,
+                                    ),
+                                  )
+                                : Container(),
+                            SizedBox(width: !widget.hideRowCount ? 16 : 0),
                             !widget.hidePageSelection
                                 ? IconButton(
                                     onPressed: (widget.source.isZeroIndexed && widget.source.currentPage > 0) ||
@@ -776,20 +801,7 @@ class _DataGridState extends State<DataGrid> {
                               ),
                               color: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
                             ),
-                            for (var p in widget.source.pagination)
-                              !widget.hidePageSelection
-                                  ? TextButton(
-                                      onPressed: () => widget.source.loadPage(p),
-                                      child: Text(
-                                        "$p",
-                                        style: TextStyle(
-                                          fontWeight: p == widget.source.currentPage ? FontWeight.bold : FontWeight.normal,
-                                          color: p == widget.source.currentPage
-                                              ? widget.primaryColor ?? Theme.of(context).colorScheme.primary
-                                              : Colors.grey,
-                                        ),
-                                      ))
-                                  : Container(),
+                            !widget.hidePageSelection ? Row(children: _getPaginationButtons()) : Container(),
                             IconButton(
                               onPressed: widget.source.currentPage < widget.source.lastPage
                                   ? () {
