@@ -125,14 +125,14 @@ abstract class DataSource extends ChangeNotifier {
 
     notifyListeners();
 
-    return refresh(true);
+    return loadPage(isZeroIndexed ? 0 : 1);
   }
 
   Future<void> setPageLimit(num limit) {
     _pageLimit = limit;
 
     notifyListeners();
-    return refresh(true);
+    return loadPage(isZeroIndexed ? 0 : 1);
   }
 
   Future<void> removefilters(String column) async {
@@ -144,7 +144,7 @@ abstract class DataSource extends ChangeNotifier {
 
     notifyListeners();
 
-    return refresh(true);
+    return loadPage(isZeroIndexed ? 0 : 1);
   }
 
   Future<void> removefilter(int index, String column) async {
@@ -156,31 +156,31 @@ abstract class DataSource extends ChangeNotifier {
 
     notifyListeners();
 
-    return refresh(true);
+    return loadPage(isZeroIndexed ? 0 : 1);
   }
 
   Future<void> addSort(String column, direction) async {
     _sort[column] = direction;
 
-    return refresh(true);
+    return loadPage(isZeroIndexed ? 0 : 1);
   }
 
   Future<void> removeSort(String column) async {
     _sort.remove(column);
 
-    return refresh(true);
+    return loadPage(isZeroIndexed ? 0 : 1);
   }
 
   Future<void> replaceAllSorts(String column, direction) async {
     _sort.clear();
     _sort[column] = direction;
 
-    return refresh(true);
+    return loadPage(isZeroIndexed ? 0 : 1);
   }
 
   Future<void> loadPage(num page) async {
     _page = page;
-    return refresh(false);
+    return refresh();
   }
 
   Future<DataSourceResponse?> exportAllRows(DataGridExportType exportType) async {
@@ -189,14 +189,8 @@ abstract class DataSource extends ChangeNotifier {
     return res;
   }
 
-  Future<void> refresh(bool resetPageNo) async {
+  Future<void> refresh() async {
     _isLoading = true;
-
-    if (resetPageNo) {
-      _items.clear();
-      _currentTotal = 0;
-      _page = _isZeroIndexed ? 0 : 1;
-    }
 
     // Notifiy of any state changes
     notifyListeners();
