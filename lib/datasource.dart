@@ -94,6 +94,7 @@ abstract class DataSource extends ChangeNotifier {
   num get pageSize => _pageLimit;
   num get totalCount => _currentTotal;
   Map<String, String> get columnSorts => _sort;
+  Map<String, List<DataFilter>> get columnFilters => _filter;
 
   List<num> get pagination {
     List<num> values = [];
