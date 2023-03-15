@@ -4,3 +4,5 @@
 .dart_tool/package_config.json
 
 .flutter-plugins-dependencies
+
+.flutter-plugins

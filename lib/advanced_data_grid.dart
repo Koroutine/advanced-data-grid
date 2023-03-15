@@ -42,6 +42,7 @@ class DataGridColumn {
     this.alignment = Alignment.centerLeft,
     this.unitName,
     this.includeInExport = false,
+    this.exportTitleReplacementString,
     this.exportReplacementString,
     this.filterColumnName,
   });
@@ -72,6 +73,9 @@ class DataGridColumn {
 
   /// Include Column inside of Table Exports.
   final bool includeInExport;
+
+  /// Replace the column's name when exporting the table
+  final String? exportTitleReplacementString;
 
   /// Replace the Value of the Column in the export with this value.
   final DataGridExportString? exportReplacementString;

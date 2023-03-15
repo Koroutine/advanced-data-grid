@@ -84,7 +84,13 @@ class _ExportDataGridModalState extends State<ExportDataGridModal> {
     List<List<dynamic>> rowsToExport = [];
 
     for (DataGridColumn column in _columns) {
-      headings.add(column.title.replaceAll('"', '""'));
+      // If the column has a custom export title, then use that as the .csv
+      // heading
+      if (column.exportTitleReplacementString != null) {
+        headings.add(column.exportTitleReplacementString!.replaceAll('"', '""'));
+      } else {
+        headings.add(column.title.replaceAll('"', '""'));
+      }
     }
 
     rowsToExport.add(headings);
@@ -93,6 +99,8 @@ class _ExportDataGridModalState extends State<ExportDataGridModal> {
       List<String> rowValues = [];
 
       for (DataGridColumn column in _columns) {
+        // If the column has a custom function to convert its data into a
+        // String for export, then call it here instead of using default methods
         if (column.exportReplacementString != null) {
           rowValues.add(column.exportReplacementString!(row, row[column.column]).replaceAll('"', '""'));
           continue;
