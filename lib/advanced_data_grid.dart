@@ -93,6 +93,12 @@ class DataGridColumn {
   final String? filterColumnName;
 }
 
+/// A widget to display data retrieved from a source
+///
+/// The DataSource abstract class is used to allow any source to be used for
+/// the DataGrid. DataSource types will return a Future<DataSourceResponse>, with
+/// the DataSourceResponse struct containing JSON allowing for DataGrid to
+/// be easily reused for many different types of Data, from differing sources.
 class DataGrid extends StatefulWidget {
   const DataGrid({
     super.key,

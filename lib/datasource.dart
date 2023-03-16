@@ -9,6 +9,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 typedef Json = Map<String, dynamic>;
 typedef DataSourceLoader = Future<DataSourceResponse?> Function(int page, int limit);
 
+/// Response from a class that implements the DataSource abstract class
+///
+/// The response struct includes:
+/// - Fields for use in pagination: The current page, size of the current page, and the total number of data pages available
+/// - Data fields in JSON form
+///
+/// JSON data can be converted as appropriate to any different type, allowing
+/// for DataGrid to be used for a wide range of data types, and different data sources.
 class DataSourceResponse {
   List<Json> items = [];
   num page = 0;
@@ -58,6 +66,13 @@ class DataFilter {
   DataFilter({this.operator, this.value});
 }
 
+/// A DataSource is an abstract class for a source of Data relevant to the grid
+///
+/// The data source in question could be an API, a local database, or anything else.
+/// DataSource extends the ChangeNotifier class, which provides notification
+/// to subscribed listeners upon change.
+///
+/// DataSource will also apply pagination and data filtering options to its data.
 abstract class DataSource extends ChangeNotifier {
   final List<Json> _items = [];
   num _currentPageSize = 0;
@@ -217,6 +232,10 @@ abstract class DataSource extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Retrieve data from the DataSource
+  ///
+  /// This must be implemented in any concrete class inherited from DataSource -
+  /// the default methods of DataSource can then retrieve and export data.
   Future<DataSourceResponse?> loader(DataGridExportType? exportType) async {
     throw UnimplementedError();
   }
@@ -227,6 +246,7 @@ abstract class DataSource extends ChangeNotifier {
   }
 }
 
+/// DataSourceApi is an implementation of the DataSource abstract class using an API instance
 class DataSourceApi extends DataSource {
   DataSourceApi({
     required this.domain,
@@ -267,6 +287,11 @@ class DataSourceApi extends DataSource {
   /// Are Pages in the API Zero Indexed
   final bool isZeroIndexed;
 
+  /// Retrieve data from the API, and package into a DataSourceResponse
+  ///
+  /// NOTE: This loader has a rather significant side effect: When DataGridExportType == asyncEmail,
+  /// then the export by email is done on the eSIM Go API rather than in the code
+  /// here.
   @override
   Future<DataSourceResponse?> loader(DataGridExportType? exportType) async {
     late SharedPreferences prefs;
@@ -293,6 +318,8 @@ class DataSourceApi extends DataSource {
           'sort': _sort.entries.map((e) => "${e.key}:${e.value}").toList(),
         };
 
+        // An extra parameter supplied to our API endpoint informs it that it
+        // should export to email
         if (exportQueryParameter != null) {
           urlQuery.addAll(exportQueryParameter);
         }

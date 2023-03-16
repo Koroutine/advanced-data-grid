@@ -20,7 +20,10 @@ class ExportDataGridModal extends StatefulWidget {
 
   final String title;
   final List<DataGridColumn> columns;
+
+  /// The source for data received
   final DataSource source;
+
   final List<DataGridExportType> exportTypes;
   final ButtonStyle? overrideButtonStyle;
   final Color primaryColor;
@@ -46,6 +49,11 @@ class _ExportDataGridModalState extends State<ExportDataGridModal> {
     super.initState();
   }
 
+  /// Export all source data for a grid as a .csv, sent to the email address of the logged in user
+  ///
+  /// NOTE: This function does not appear to package any retrieved data into
+  /// a .csv file, or contain any email logic. This is because the email functionality
+  /// is called within the eSIMs Go API, rather than here.
   _asyncEmailDataExport() async {
     DataSourceResponse? res = await widget.source.exportAllRows(_exportType);
 
@@ -63,6 +71,7 @@ class _ExportDataGridModalState extends State<ExportDataGridModal> {
     }
   }
 
+  /// Export all source data for a grid as a .csv, to be downloaded immediately by the user
   _allPageDataExport() async {
     DataSourceResponse? allRows = await widget.source.exportAllRows(_exportType);
 
@@ -79,6 +88,7 @@ class _ExportDataGridModalState extends State<ExportDataGridModal> {
     _exportDataToCsv();
   }
 
+  /// Export the data currently displayed in the grid as a .csv, to be downloaded immediately by the user
   _exportDataToCsv() {
     List<String> headings = [];
     List<List<dynamic>> rowsToExport = [];
@@ -265,9 +275,12 @@ class _ExportDataGridModalState extends State<ExportDataGridModal> {
                         ],
                       ),
                       const SizedBox(height: 10),
+
+                      // Column widget containing different export options available
                       Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          // Current page data export
                           widget.exportTypes.contains(DataGridExportType.currentPage)
                               ? RadioListTile<DataGridExportType>(
                                   title: const Text('Current Page'),
@@ -283,7 +296,10 @@ class _ExportDataGridModalState extends State<ExportDataGridModal> {
                                   },
                                 )
                               : Container(),
+                          // Add a small box for spacing if DataGridExportType.currentPage is active
                           SizedBox(height: widget.exportTypes.contains(DataGridExportType.currentPage) ? 5 : 0),
+
+                          // All pages data export
                           widget.exportTypes.contains(DataGridExportType.allPages)
                               ? RadioListTile<DataGridExportType>(
                                   title: const Text('All Pages'),
@@ -299,6 +315,8 @@ class _ExportDataGridModalState extends State<ExportDataGridModal> {
                                   },
                                 )
                               : Container(),
+
+                          // All pages data export to email
                           widget.exportTypes.contains(DataGridExportType.asyncEmail)
                               ? RadioListTile<DataGridExportType>(
                                   title: const Text("Email All Pages (Sent to your Account's Email)"),
@@ -317,6 +335,8 @@ class _ExportDataGridModalState extends State<ExportDataGridModal> {
                         ],
                       ),
                       const SizedBox(height: 16),
+
+                      // Row Widget with buttons to either 1. cancel export 2. export data
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
