@@ -42,6 +42,7 @@ class DataGridColumn {
     this.alignment = Alignment.centerLeft,
     this.unitName,
     this.includeInExport = false,
+    this.exportTitleReplacementString,
     this.exportReplacementString,
     this.filterColumnName,
   });
@@ -73,6 +74,9 @@ class DataGridColumn {
   /// Include Column inside of Table Exports.
   final bool includeInExport;
 
+  /// Replace the column's name when exporting the table
+  final String? exportTitleReplacementString;
+
   /// Replace the Value of the Column in the export with this value.
   final DataGridExportString? exportReplacementString;
 
@@ -89,6 +93,12 @@ class DataGridColumn {
   final String? filterColumnName;
 }
 
+/// A widget to display data retrieved from a source
+///
+/// The DataSource abstract class is used to allow any source to be used for
+/// the DataGrid. DataSource types will return a Future<DataSourceResponse>, with
+/// the DataSourceResponse struct containing JSON allowing for DataGrid to
+/// be easily reused for many different types of Data, from differing sources.
 class DataGrid extends StatefulWidget {
   const DataGrid({
     super.key,
