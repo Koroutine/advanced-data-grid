@@ -104,6 +104,7 @@ class DataGrid extends StatefulWidget {
     super.key,
     required this.source,
     required this.builders,
+    this.searchSource,
     this.title,
     this.subTitle,
     this.actions,
@@ -129,6 +130,9 @@ class DataGrid extends StatefulWidget {
 
   /// Data Source for the Table.
   final DataSource source;
+
+  /// Data Source for the Search Box.
+  final DataSource? searchSource;
 
   /// List of Columns for the Table.
   final List<DataGridColumn> builders;
@@ -205,18 +209,39 @@ class _DataGridState extends State<DataGrid> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
   final double _mobileWidth = 1024;
+  bool secondarySource = false;
+  late DataSource dataSource;
 
   @override
   void initState() {
     super.initState();
 
-    widget.source.loadPage(widget.source.isZeroIndexed ? 0 : 1);
+    usingMainSearch(secondarySource);
+
+    dataSource.loadPage(dataSource.isZeroIndexed ? 0 : 1);
+  }
+
+  usingMainSearch(bool usingMainSearch) {
+    if (usingMainSearch) {
+      setState(() {
+        dataSource = widget.searchSource ?? widget.source;
+      });
+      dataSource.setFilters(
+        widget.mainSearchColumn!.filterColumnName ?? widget.mainSearchColumn!.column,
+        [DataFilter(operator: null, value: _searchController.text)],
+      );
+    } else {
+      setState(() {
+        dataSource = widget.source;
+      });
+    }
+    dataSource.loadPage(dataSource.isZeroIndexed ? 0 : 1);
   }
 
   List<DataColumn2> get _headers {
     var titleCells = widget.builders.asMap().entries.map((entry) {
-      var sortDirection = widget.source.getSort(entry.value.filterColumnName ?? entry.value.column);
-      var hasFilter = widget.source.hasFilters(entry.value.filterColumnName ?? entry.value.column);
+      var sortDirection = dataSource.getSort(entry.value.filterColumnName ?? entry.value.column);
+      var hasFilter = dataSource.hasFilters(entry.value.filterColumnName ?? entry.value.column);
 
       Widget titleContent = Row(
         children: [
@@ -245,27 +270,27 @@ class _DataGridState extends State<DataGrid> {
                               ? FilterDate(
                                   data: entry.value,
                                   filterType: entry.value.filter!,
-                                  source: widget.source,
+                                  source: dataSource,
                                   primaryColor: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
                                 )
                               : entry.value.filter == DataFilterType.BOOLEAN
                                   ? FilterBool(
                                       data: entry.value,
                                       filterType: entry.value.filter!,
-                                      source: widget.source,
+                                      source: dataSource,
                                       primaryColor: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
                                     )
                                   : entry.value.filter == DataFilterType.COUNTRY_CODE
                                       ? FilterCountry(
                                           data: entry.value,
                                           filterType: entry.value.filter!,
-                                          source: widget.source,
+                                          source: dataSource,
                                           primaryColor: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
                                         )
                                       : FilterText(
                                           data: entry.value,
                                           filterType: entry.value.filter!,
-                                          source: widget.source,
+                                          source: dataSource,
                                           primaryColor: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
                                         ),
                         )
@@ -286,7 +311,7 @@ class _DataGridState extends State<DataGrid> {
                                 ? Icon(Icons.arrow_downward_rounded, color: widget.primaryColor ?? Theme.of(context).colorScheme.primary)
                                 : Container(),
                       ),
-                      widget.source.columnSorts.length > 1
+                      dataSource.columnSorts.length > 1
                           ? Align(
                               alignment: Alignment.centerRight,
                               child: Container(
@@ -299,8 +324,7 @@ class _DataGridState extends State<DataGrid> {
                                 ),
                                 child: Center(
                                   child: Text(
-                                    (widget.source.columnSorts.keys.toList().indexOf(entry.value.filterColumnName ?? entry.value.column) + 1)
-                                        .toString(),
+                                    (dataSource.columnSorts.keys.toList().indexOf(entry.value.filterColumnName ?? entry.value.column) + 1).toString(),
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 8,
@@ -337,14 +361,14 @@ class _DataGridState extends State<DataGrid> {
                       ),
                       onPressed: () {
                         if (sortDirection == "asc") {
-                          widget.source.removeSort(entry.value.filterColumnName ?? entry.value.column);
+                          dataSource.removeSort(entry.value.filterColumnName ?? entry.value.column);
                           return;
                         }
 
                         if (widget.enableMultiSort) {
-                          widget.source.addSort(entry.value.filterColumnName ?? entry.value.column, sortDirection == "desc" ? "asc" : "desc");
+                          dataSource.addSort(entry.value.filterColumnName ?? entry.value.column, sortDirection == "desc" ? "asc" : "desc");
                         } else {
-                          widget.source.replaceAllSorts(entry.value.filterColumnName ?? entry.value.column, sortDirection == "desc" ? "asc" : "desc");
+                          dataSource.replaceAllSorts(entry.value.filterColumnName ?? entry.value.column, sortDirection == "desc" ? "asc" : "desc");
                         }
                       },
                       child: titleContent,
@@ -368,12 +392,20 @@ class _DataGridState extends State<DataGrid> {
         onChanged: (value) {
           _searchDebouncer.run(() {
             if (_searchController.text != "") {
-              widget.source.setFilters(
-                widget.mainSearchColumn!.filterColumnName ?? widget.mainSearchColumn!.column,
-                [DataFilter(operator: null, value: _searchController.text)],
-              );
+              if (!secondarySource) {
+                setState(() {
+                  secondarySource = true;
+                });
+              }
+              usingMainSearch(secondarySource);
             } else {
-              widget.source.removefilters(widget.mainSearchColumn!.filterColumnName ?? widget.mainSearchColumn!.column);
+              if (secondarySource) {
+                setState(() {
+                  secondarySource = false;
+                });
+              }
+              usingMainSearch(secondarySource);
+              //dataSource.removefilters(widget.mainSearchColumn!.filterColumnName ?? widget.mainSearchColumn!.column);
             }
           });
         },
@@ -406,14 +438,14 @@ class _DataGridState extends State<DataGrid> {
   List<Widget> _getPaginationButtons() {
     List<Widget> paginationButtons = [];
 
-    for (var p in widget.source.pagination) {
+    for (var p in dataSource.pagination) {
       TextButton(
-        onPressed: () => widget.source.loadPage(p),
+        onPressed: () => dataSource.loadPage(p),
         child: Text(
           "$p",
           style: TextStyle(
-            fontWeight: p == widget.source.currentPage ? FontWeight.bold : FontWeight.normal,
-            color: p == widget.source.currentPage ? widget.primaryColor ?? Theme.of(context).colorScheme.primary : Colors.grey,
+            fontWeight: p == dataSource.currentPage ? FontWeight.bold : FontWeight.normal,
+            color: p == dataSource.currentPage ? widget.primaryColor ?? Theme.of(context).colorScheme.primary : Colors.grey,
           ),
         ),
       );
@@ -425,7 +457,7 @@ class _DataGridState extends State<DataGrid> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => widget.source,
+      create: (context) => dataSource,
       child: Consumer<DataSource>(
         builder: (context, value, child) {
           // Default to loader
@@ -484,7 +516,7 @@ class _DataGridState extends State<DataGrid> {
             rows: [
               for (var row in rows) row,
             ],
-            empty: widget.source.isLoading
+            empty: dataSource.isLoading
                 ? Container(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
@@ -564,7 +596,7 @@ class _DataGridState extends State<DataGrid> {
                                     ),
                                   )
                                 : Container(),
-                            widget.exportTypes.isNotEmpty && !widget.source.isLoading && widget.source.items.isNotEmpty
+                            widget.exportTypes.isNotEmpty && !dataSource.isLoading && dataSource.items.isNotEmpty
                                 ? Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 5),
                                     child: TextButton(
@@ -575,7 +607,7 @@ class _DataGridState extends State<DataGrid> {
                                               return ExportDataGridModal(
                                                 title: widget.title ?? "Data",
                                                 columns: widget.builders.where((column) => column.includeInExport == true).toList(),
-                                                source: widget.source,
+                                                source: dataSource,
                                                 exportTypes: widget.exportTypes,
                                                 overrideButtonStyle: widget.overrideElevatedButtonStyle,
                                                 primaryColor: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
@@ -731,7 +763,7 @@ class _DataGridState extends State<DataGrid> {
                 Container(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 5),
                   height: 48,
-                  child: !widget.source.isLoading
+                  child: !dataSource.isLoading
                       ? Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MediaQuery.of(context).size.width > _mobileWidth ? MainAxisAlignment.end : MainAxisAlignment.center,
@@ -763,9 +795,9 @@ class _DataGridState extends State<DataGrid> {
                                                   value: 100,
                                                   child: Text("100", style: TextStyle(color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12))),
                                             ],
-                                            value: widget.source.pageSize,
+                                            value: dataSource.pageSize,
                                             onChanged: (limit) {
-                                              widget.source.setPageLimit(limit ?? 15);
+                                              dataSource.setPageLimit(limit ?? 15);
                                             },
                                           ),
                                         ),
@@ -776,8 +808,8 @@ class _DataGridState extends State<DataGrid> {
                             !widget.hideRowCount
                                 ? Text(
                                     widget.hidePageSelection
-                                        ? "${widget.source.totalCount} rows"
-                                        : "${MediaQuery.of(context).size.width > _mobileWidth ? "Showing " : ""}${(widget.source.currentPage * widget.source.pageSize) - (widget.source.pageSize - 1)}-${((widget.source.currentPage * widget.source.pageSize) - widget.source.pageSize) + widget.source.items.length} of ${widget.source.totalCount}",
+                                        ? "${dataSource.totalCount} rows"
+                                        : "${MediaQuery.of(context).size.width > _mobileWidth ? "Showing " : ""}${(dataSource.currentPage * dataSource.pageSize) - (dataSource.pageSize - 1)}-${((dataSource.currentPage * dataSource.pageSize) - dataSource.pageSize) + dataSource.items.length} of ${dataSource.totalCount}",
                                     style: const TextStyle(
                                       color: Color.fromRGBO(105, 105, 105, 1),
                                       fontSize: 12,
@@ -787,10 +819,10 @@ class _DataGridState extends State<DataGrid> {
                             SizedBox(width: !widget.hideRowCount ? 16 : 0),
                             !widget.hidePageSelection
                                 ? IconButton(
-                                    onPressed: (widget.source.isZeroIndexed && widget.source.currentPage > 0) ||
-                                            (!widget.source.isZeroIndexed && widget.source.currentPage > 1)
+                                    onPressed: (dataSource.isZeroIndexed && dataSource.currentPage > 0) ||
+                                            (!dataSource.isZeroIndexed && dataSource.currentPage > 1)
                                         ? () {
-                                            widget.source.loadPage(widget.source.isZeroIndexed ? 0 : 1);
+                                            dataSource.loadPage(dataSource.isZeroIndexed ? 0 : 1);
                                           }
                                         : null,
                                     icon: const Icon(
@@ -800,10 +832,10 @@ class _DataGridState extends State<DataGrid> {
                                   )
                                 : Container(),
                             IconButton(
-                              onPressed: (widget.source.isZeroIndexed && widget.source.currentPage > 0) ||
-                                      (!widget.source.isZeroIndexed && widget.source.currentPage > 1)
+                              onPressed: (dataSource.isZeroIndexed && dataSource.currentPage > 0) ||
+                                      (!dataSource.isZeroIndexed && dataSource.currentPage > 1)
                                   ? () {
-                                      widget.source.loadPage(widget.source.currentPage - 1);
+                                      dataSource.loadPage(dataSource.currentPage - 1);
                                     }
                                   : null,
                               icon: const Icon(
@@ -813,9 +845,9 @@ class _DataGridState extends State<DataGrid> {
                             ),
                             !widget.hidePageSelection ? Row(children: _getPaginationButtons()) : Container(),
                             IconButton(
-                              onPressed: widget.source.currentPage < widget.source.lastPage
+                              onPressed: dataSource.currentPage < dataSource.lastPage
                                   ? () {
-                                      widget.source.loadPage(widget.source.currentPage + 1);
+                                      dataSource.loadPage(dataSource.currentPage + 1);
                                     }
                                   : null,
                               icon: const Icon(
@@ -825,9 +857,9 @@ class _DataGridState extends State<DataGrid> {
                             ),
                             !widget.hidePageSelection
                                 ? IconButton(
-                                    onPressed: widget.source.currentPage < widget.source.lastPage
+                                    onPressed: dataSource.currentPage < dataSource.lastPage
                                         ? () {
-                                            widget.source.loadPage(widget.source.lastPage);
+                                            dataSource.loadPage(dataSource.lastPage);
                                           }
                                         : null,
                                     icon: const Icon(
