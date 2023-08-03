@@ -113,6 +113,7 @@ class DataGrid extends StatefulWidget {
     this.enableTextSelection = false,
     this.enableMultiSort = false,
     this.mainSearchColumn,
+    this.disableFiltersOnMainSearch = true,
     this.showCheckboxColumn = false,
     this.identifierColumnName,
     this.selectedRows,
@@ -159,6 +160,9 @@ class DataGrid extends StatefulWidget {
 
   /// When provided, will add a Search Box to the top right of the Grid.
   final DataGridColumn? mainSearchColumn;
+
+  /// When true, will disable all other filters when searching.
+  final bool disableFiltersOnMainSearch;
 
   /// Display Checkboxes beside each row for Row Selection.
   final bool showCheckboxColumn;
@@ -217,6 +221,7 @@ class _DataGridState extends State<DataGrid> {
     var titleCells = widget.builders.asMap().entries.map((entry) {
       var sortDirection = widget.source.getSort(entry.value.filterColumnName ?? entry.value.column);
       var hasFilter = widget.source.hasFilters(entry.value.filterColumnName ?? entry.value.column);
+      var filterDisabled = widget.source.filterDisabled();
 
       Widget titleContent = Row(
         children: [
@@ -232,7 +237,7 @@ class _DataGridState extends State<DataGrid> {
                   padding: EdgeInsets.only(right: sortDirection == "asc" || sortDirection == "desc" ? 10 : 0),
                   child: PopupMenuButton(
                     enableFeedback: false,
-                    enabled: true,
+                    enabled: !filterDisabled,
                     padding: const EdgeInsets.all(0),
                     child: hasFilter
                         ? Icon(Icons.filter_alt_off_rounded, color: widget.primaryColor ?? Theme.of(context).colorScheme.primary)

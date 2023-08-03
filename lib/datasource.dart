@@ -103,6 +103,10 @@ abstract class DataSource extends ChangeNotifier {
     return _filter[column];
   }
 
+  bool filterDisabled() {
+    return false;
+  }
+
   bool get isZeroIndexed => _isZeroIndexed;
   num get currentPage => _page;
   num get lastPage => (_currentTotal / _pageLimit).ceil();
@@ -258,6 +262,9 @@ class DataSourceApi extends DataSource {
     this.onInvalidToken,
     this.exportQueryParameter,
     this.isZeroIndexed = false,
+    this.searchPath = "",
+    this.searchQueryParameter = "",
+    this.disableFiltersOnSearch = true,
   }) : super(0, 15, defaultSortOrder, {}, isZeroIndexed);
 
   /// Domain Name of the API to call including http/https.
@@ -287,14 +294,37 @@ class DataSourceApi extends DataSource {
   /// Are Pages in the API Zero Indexed
   final bool isZeroIndexed;
 
+  /// Path of the Search API to call.
+  final String searchPath;
+
+  /// Value to search for.
+  final String searchQueryParameter;
+
+  /// Disable Filters when searching.
+  final bool disableFiltersOnSearch;
+
   /// Retrieve data from the API, and package into a DataSourceResponse
   ///
   /// NOTE: This loader has a rather significant side effect: When DataGridExportType == asyncEmail,
   /// then the export by email is done on the eSIM Go API rather than in the code
   /// here.
   @override
+  bool filterDisabled() {
+    bool searchInUse = false;
+    for (var e in _filter.entries) {
+      var key = e.key;
+      var values = e.value;
+      if (searchQueryParameter != "" && key == searchQueryParameter && values.isNotEmpty) {
+        searchInUse = true;
+      }
+    }
+    return searchInUse;
+  }
+
+  @override
   Future<DataSourceResponse?> loader(DataGridExportType? exportType) async {
     late SharedPreferences prefs;
+    bool searchInUse = false;
     String? token;
     if (tokenSharedPref != null) {
       prefs = await SharedPreferences.getInstance();
@@ -341,13 +371,33 @@ class DataSourceApi extends DataSource {
     for (var e in _filter.entries) {
       var key = e.key;
       var values = e.value;
-
-      if (values.isNotEmpty) {
+      if (searchQueryParameter != "" && key == searchQueryParameter && values.isNotEmpty) {
+        searchInUse = true;
         urlQuery[key] = values
             .where((e) => e.value != null)
             .map((e) => e.operator == null ? e.value! : "${e.operator.toString().split(".").last.toLowerCase()}:${e.value}")
             .toList();
       }
+    }
+
+    for (var e in _filter.entries) {
+      var key = e.key;
+      var values = e.value;
+      if (!urlQuery.containsKey(searchQueryParameter)) {
+        if (values.isNotEmpty) {
+          urlQuery[key] = values
+              .where((e) => e.value != null)
+              .map((e) => e.operator == null ? e.value! : "${e.operator.toString().split(".").last.toLowerCase()}:${e.value}")
+              .toList();
+        }
+      } else if (!disableFiltersOnSearch) {
+        if (values.isNotEmpty) {
+          urlQuery[key] = values
+              .where((e) => e.value != null)
+              .map((e) => e.operator == null ? e.value! : "${e.operator.toString().split(".").last.toLowerCase()}:${e.value}")
+              .toList();
+        }
+      } else {}
     }
 
     print(query);
@@ -363,7 +413,8 @@ class DataSourceApi extends DataSource {
       });
     }
 
-    Response r = await get(Uri.parse(domain + path).replace(queryParameters: urlQuery), headers: headers);
+    Response r =
+        await get(Uri.parse(domain + (searchInUse && searchPath != "" ? searchPath : path)).replace(queryParameters: urlQuery), headers: headers);
 
     if (r.statusCode == 200) {
       if (exportType == DataGridExportType.asyncEmail) {
