@@ -126,6 +126,9 @@ class DataGrid extends StatefulWidget {
     this.fixedPageLimit,
     this.hidePageSelection = false,
     this.hideRowCount = false,
+    this.enableSearchColumns = false,
+    this.searchColumnBuilders = const [],
+    this.searchColumnIcon = true,
   });
 
   /// Data Source for the Table.
@@ -200,8 +203,94 @@ class DataGrid extends StatefulWidget {
   /// Hide Row Count displayed in the Grid Footer
   final bool hideRowCount;
 
+  /// Enable additional search columns
+  final bool enableSearchColumns;
+
+  /// List of additional search columns
+  final List<DataGridColumn>? searchColumnBuilders;
+
+  /// Using icon in the additional search field row
+  final bool searchColumnIcon;
+
   @override
   State<DataGrid> createState() => _DataGridState();
+}
+
+List<DataCell> _getSearchCells(List<DataGridColumn> searchColumnBuilders, List<DataGridColumn> builders, Map<String, dynamic> data, bool iconColumn) {
+  int searchColumnBuilderslength = searchColumnBuilders.length;
+  List<DataGridColumn> searchColumns = [];
+  searchColumns.addAll(searchColumnBuilders);
+  int missingColumns = builders.length - searchColumnBuilderslength;
+  bool cellInSearch = false;
+
+  for (var i = 0; i < missingColumns; i++) {
+    searchColumns.add(
+      //Filler columns required to keep the search cells aligned with the data cells
+      DataGridColumn(column: "fillerColumn", builder: ((data, value, index) => const Text("")), title: ""),
+    );
+  }
+  List<Object> toRemove = [];
+  var dataCells = searchColumns.asMap().entries.map((entry) {
+    dynamic cellData;
+
+    if (entry.value.isEdge ?? false) {
+      cellData = data["edges"][entry.value.column];
+    } else {
+      cellData = data[entry.value.column];
+    }
+
+    var dataCell = DataCell(
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: Align(
+          alignment: entry.value.alignment,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              entry.value.title != ""
+                  ? Text(
+                      entry.value.title,
+                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+                    )
+                  : Container(),
+              entry.value.builder(data, cellData, entry.key),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    if (cellData == "" && entry.value.column != "fillerColumn" && entry.value.column != "iconColumn") {
+      toRemove.add(dataCell);
+    } else {
+      for (var i = 0; i < data['fieldsInSearch'].length; i++) {
+        var fieldInSearch = Map.from(data['fieldsInSearch'][i]);
+        if (fieldInSearch['field'] == entry.value.column) {
+          cellInSearch = true;
+        }
+      }
+      if (!cellInSearch && entry.value.column != "fillerColumn" && entry.value.column != "iconColumn") {
+        toRemove.add(dataCell);
+      }
+    }
+
+    return dataCell;
+  }).toList();
+
+  if (iconColumn) {
+    searchColumnBuilderslength--;
+  }
+
+  if (toRemove.length == searchColumnBuilderslength) {
+    return [];
+  } else {
+    for (var i = 0; i < toRemove.length; i++) {
+      dataCells.remove(toRemove[i]);
+      dataCells.add(DataCell(Container()));
+    }
+  }
+  return dataCells;
 }
 
 class _DataGridState extends State<DataGrid> {
@@ -209,19 +298,23 @@ class _DataGridState extends State<DataGrid> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
   final double _mobileWidth = 1024;
+  late bool _searchInUse;
 
   @override
   void initState() {
     super.initState();
 
     widget.source.loadPage(widget.source.isZeroIndexed ? 0 : 1);
+    setState(() {
+      _searchInUse = widget.source.searchInUse();
+    });
   }
 
   List<DataColumn2> get _headers {
     var titleCells = widget.builders.asMap().entries.map((entry) {
       var sortDirection = widget.source.getSort(entry.value.filterColumnName ?? entry.value.column);
       var hasFilter = widget.source.hasFilters(entry.value.filterColumnName ?? entry.value.column);
-      var filterDisabled = widget.source.filterDisabled();
+      _searchInUse = widget.source.searchInUse();
 
       Widget titleContent = Row(
         children: [
@@ -237,7 +330,7 @@ class _DataGridState extends State<DataGrid> {
                   padding: EdgeInsets.only(right: sortDirection == "asc" || sortDirection == "desc" ? 10 : 0),
                   child: PopupMenuButton(
                     enableFeedback: false,
-                    enabled: !filterDisabled,
+                    enabled: !_searchInUse,
                     padding: const EdgeInsets.all(0),
                     child: hasFilter
                         ? Icon(Icons.filter_alt_off_rounded, color: widget.primaryColor ?? Theme.of(context).colorScheme.primary)
@@ -434,11 +527,48 @@ class _DataGridState extends State<DataGrid> {
       child: Consumer<DataSource>(
         builder: (context, value, child) {
           // Default to loader
-          List<DataRow> rows = [];
+          List<DataRow2> rows = [];
 
           if (!value.isLoading) {
-            rows = value.items
-                .map((data) => DataRow2(
+            /*rows = value.items
+                .map((data) => 
+                      DataRow2(
+                          onSelectChanged: widget.onSelectionChange != null && widget.identifierColumnName != null
+                              ? (bool? sel) {
+                                  bool isSelected = sel == true;
+                                  widget.onSelectionChange!(data, isSelected);
+                                }
+                              : null,
+                          selected: widget.selectedRows != null &&
+                                  widget.identifierColumnName != null &&
+                                  widget.selectedRows!.contains(data[widget.identifierColumnName])
+                              ? true
+                              : false,
+                          onTap: widget.onRowTap != null
+                              ? () {
+                                  widget.onRowTap!(data);
+                                }
+                              : null,
+                          cells: widget.builders.asMap().entries.map((entry) {
+                            dynamic cellData;
+
+                            if (entry.value.isEdge ?? false) {
+                              cellData = data["edges"][entry.value.column];
+                            } else {
+                              cellData = data[entry.value.column];
+                            }
+
+                            return DataCell(Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 10),
+                                child: Align(alignment: entry.value.alignment, child: entry.value.builder(data, cellData, entry.key))));
+                          }).toList()),
+                      
+                    )
+                .toList();*/
+
+            for (var data in value.items) {
+              rows.add(
+                DataRow2(
                     onSelectChanged: widget.onSelectionChange != null && widget.identifierColumnName != null
                         ? (bool? sel) {
                             bool isSelected = sel == true;
@@ -467,8 +597,25 @@ class _DataGridState extends State<DataGrid> {
                       return DataCell(Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           child: Align(alignment: entry.value.alignment, child: entry.value.builder(data, cellData, entry.key))));
-                    }).toList()))
-                .toList();
+                    }).toList()),
+              );
+
+              if (_searchInUse &&
+                  _getSearchCells(widget.searchColumnBuilders ?? [], widget.builders, data, widget.searchColumnIcon).isNotEmpty &&
+                  widget.enableSearchColumns) {
+                rows.add(
+                  DataRow2(
+                    color: MaterialStateProperty.all<Color>(Colors.grey[100]!),
+                    cells: _getSearchCells(
+                      widget.searchColumnBuilders ?? [],
+                      widget.builders,
+                      data,
+                      widget.searchColumnIcon,
+                    ), // Empty cells for the additional row without extra content
+                  ),
+                );
+              }
+            }
           }
 
           Widget table = DataTable2(

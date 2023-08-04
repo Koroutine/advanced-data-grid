@@ -103,7 +103,7 @@ abstract class DataSource extends ChangeNotifier {
     return _filter[column];
   }
 
-  bool filterDisabled() {
+  bool searchInUse() {
     return false;
   }
 
@@ -309,7 +309,7 @@ class DataSourceApi extends DataSource {
   /// then the export by email is done on the eSIM Go API rather than in the code
   /// here.
   @override
-  bool filterDisabled() {
+  bool searchInUse() {
     bool searchInUse = false;
     for (var e in _filter.entries) {
       var key = e.key;
