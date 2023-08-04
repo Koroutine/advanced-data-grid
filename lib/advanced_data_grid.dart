@@ -129,6 +129,7 @@ class DataGrid extends StatefulWidget {
     this.enableSearchColumns = false,
     this.searchColumnBuilders = const [],
     this.searchColumnIcon = true,
+    this.fieldsWithSearchresField = '',
   });
 
   /// Data Source for the Table.
@@ -212,11 +213,15 @@ class DataGrid extends StatefulWidget {
   /// Using icon in the additional search field row
   final bool searchColumnIcon;
 
+  /// Field in response of searching datasource that contains information about which fields are searched
+  final String fieldsWithSearchresField;
+
   @override
   State<DataGrid> createState() => _DataGridState();
 }
 
-List<DataCell> _getSearchCells(List<DataGridColumn> searchColumnBuilders, List<DataGridColumn> builders, Map<String, dynamic> data, bool iconColumn) {
+List<DataCell> _getSearchCells(List<DataGridColumn> searchColumnBuilders, List<DataGridColumn> builders, Map<String, dynamic> data, bool iconColumn,
+    String fieldsWithSearchresField) {
   int searchColumnBuilderslength = searchColumnBuilders.length;
   List<DataGridColumn> searchColumns = [];
   searchColumns.addAll(searchColumnBuilders);
@@ -263,9 +268,9 @@ List<DataCell> _getSearchCells(List<DataGridColumn> searchColumnBuilders, List<D
 
     if (cellData == "" && entry.value.column != "fillerColumn" && entry.value.column != "iconColumn") {
       toRemove.add(dataCell);
-    } else {
-      for (var i = 0; i < data['fieldsInSearch'].length; i++) {
-        var fieldInSearch = Map.from(data['fieldsInSearch'][i]);
+    } else if (data[fieldsWithSearchresField] != null) {
+      for (var i = 0; i < data[fieldsWithSearchresField].length; i++) {
+        var fieldInSearch = Map.from(data[fieldsWithSearchresField][i]);
         if (fieldInSearch['field'] == entry.value.column) {
           cellInSearch = true;
         }
@@ -601,7 +606,8 @@ class _DataGridState extends State<DataGrid> {
               );
 
               if (_searchInUse &&
-                  _getSearchCells(widget.searchColumnBuilders ?? [], widget.builders, data, widget.searchColumnIcon).isNotEmpty &&
+                  _getSearchCells(widget.searchColumnBuilders ?? [], widget.builders, data, widget.searchColumnIcon, widget.fieldsWithSearchresField)
+                      .isNotEmpty &&
                   widget.enableSearchColumns) {
                 rows.add(
                   DataRow2(
@@ -611,6 +617,7 @@ class _DataGridState extends State<DataGrid> {
                       widget.builders,
                       data,
                       widget.searchColumnIcon,
+                      widget.fieldsWithSearchresField,
                     ), // Empty cells for the additional row without extra content
                   ),
                 );
