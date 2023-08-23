@@ -425,7 +425,7 @@ class DataSourceApi extends DataSource {
       return data;
     }
 
-    if (r.statusCode == 401) {
+    if (r.statusCode == 401 || r.statusCode == 403) {
       if (onInvalidToken != null) {
         onInvalidToken!();
       }
