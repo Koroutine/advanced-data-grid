@@ -465,6 +465,7 @@ class _DataGridState extends State<DataGrid> {
     return SizedBox(
       width: 240,
       child: TextFormField(
+        enabled: widget.source.isLoading ? false : true,
         controller: _searchController,
         textAlignVertical: TextAlignVertical.center,
         focusNode: _searchFocusNode,
