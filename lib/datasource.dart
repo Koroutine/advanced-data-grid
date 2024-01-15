@@ -265,6 +265,7 @@ class DataSourceApi extends DataSource {
     this.searchPath = "",
     this.searchQueryParameter = "",
     this.disableFiltersOnSearch = true,
+    this.separatedSortColumns = const [],
   }) : super(0, 15, defaultSortOrder, {}, isZeroIndexed);
 
   /// Domain Name of the API to call including http/https.
@@ -303,6 +304,9 @@ class DataSourceApi extends DataSource {
   /// Disable Filters when searching.
   final bool disableFiltersOnSearch;
 
+  /// List of Columns that will be sent to the API endpoint using the parameter `sortIn`.
+  final List<String> separatedSortColumns;
+
   /// Retrieve data from the API, and package into a DataSourceResponse
   ///
   /// NOTE: This loader has a rather significant side effect: When DataGridExportType == asyncEmail,
@@ -340,12 +344,22 @@ class DataSourceApi extends DataSource {
         urlQuery = {
           'page': ["${_isZeroIndexed ? 0 : 1}"],
           'limit': ["$_currentTotal"],
-          'sort': _sort.entries.map((e) => "${e.key}:${e.value}").toList(),
+          'sort':
+              _sort.entries.map((e) => !separatedSortColumns.contains(e.key) ? "${e.key}:${e.value}" : null).where((value) => value != null).toList(),
+          'sortIn': _sort.entries
+              .map((e) => separatedSortColumns.contains(e.key) ? "${e.key}:name:${e.value}" : null)
+              .where((value) => value != null)
+              .toList()
         };
         break;
       case DataGridExportType.asyncEmail:
         urlQuery = {
-          'sort': _sort.entries.map((e) => "${e.key}:${e.value}").toList(),
+          'sort':
+              _sort.entries.map((e) => !separatedSortColumns.contains(e.key) ? "${e.key}:${e.value}" : null).where((value) => value != null).toList(),
+          'sortIn': _sort.entries
+              .map((e) => separatedSortColumns.contains(e.key) ? "${e.key}:name:${e.value}" : null)
+              .where((value) => value != null)
+              .toList()
         };
 
         // An extra parameter supplied to our API endpoint informs it that it
@@ -358,7 +372,12 @@ class DataSourceApi extends DataSource {
         urlQuery = {
           'page': ["$_page"],
           'limit': ["$_pageLimit"],
-          'sort': _sort.entries.map((e) => "${e.key}:${e.value}").toList(),
+          'sort':
+              _sort.entries.map((e) => !separatedSortColumns.contains(e.key) ? "${e.key}:${e.value}" : null).where((value) => value != null).toList(),
+          'sortIn': _sort.entries
+              .map((e) => separatedSortColumns.contains(e.key) ? "${e.key}:name:${e.value}" : null)
+              .where((value) => value != null)
+              .toList()
         };
         break;
     }
