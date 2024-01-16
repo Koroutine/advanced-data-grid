@@ -246,23 +246,26 @@ class _ExportDataGridModalState extends State<ExportDataGridModal> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Row(
+                        mainAxisAlignment: MediaQuery.of(context).size.width > 450 ? MainAxisAlignment.spaceBetween : MainAxisAlignment.end,
                         children: [
-                          Expanded(
-                            child: Row(
-                              children: [
-                                Icon(Icons.download, color: widget.primaryColor),
-                                const SizedBox(width: 10),
-                                SelectableText(
-                                  "Export ${widget.title}",
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    color: Color.fromRGBO(54, 54, 54, 1),
-                                    fontSize: 16,
+                          if (MediaQuery.of(context).size.width > 450) ...[
+                            Expanded(
+                              child: Row(
+                                children: [
+                                  Icon(Icons.download, color: widget.primaryColor),
+                                  const SizedBox(width: 10),
+                                  SelectableText(
+                                    "Export ${widget.title}",
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      color: Color.fromRGBO(54, 54, 54, 1),
+                                      fontSize: 16,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
+                          ],
                           IconButton(
                             onPressed: () {
                               Navigator.of(context).pop();
@@ -274,7 +277,25 @@ class _ExportDataGridModalState extends State<ExportDataGridModal> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 10),
+
+                      if (MediaQuery.of(context).size.width <= 450) ...[
+                        const SizedBox(height: 5),
+                        Row(
+                          children: [
+                            Icon(Icons.download, color: widget.primaryColor),
+                            const SizedBox(width: 10),
+                            SelectableText(
+                              "Export ${widget.title}",
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w700,
+                                color: Color.fromRGBO(54, 54, 54, 1),
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                      SizedBox(height: MediaQuery.of(context).size.width <= 450 ? 15 : 10),
 
                       // Column widget containing different export options available
                       Column(
@@ -344,10 +365,6 @@ class _ExportDataGridModalState extends State<ExportDataGridModal> {
                             onPressed: () async {
                               Navigator.of(context).pop();
                             },
-                            child: const Text(
-                              "CANCEL",
-                              style: TextStyle(color: Color.fromRGBO(105, 105, 105, 1)),
-                            ),
                             style: widget.overrideButtonStyle != null
                                 ? widget.overrideButtonStyle!
                                     .copyWith(backgroundColor: MaterialStateProperty.all(const Color.fromRGBO(243, 243, 243, 1.0)))
@@ -357,41 +374,81 @@ class _ExportDataGridModalState extends State<ExportDataGridModal> {
                                         .style!
                                         .copyWith(backgroundColor: MaterialStateProperty.all(const Color.fromRGBO(243, 243, 243, 1.0)))
                                     : ElevatedButton.styleFrom(backgroundColor: const Color.fromRGBO(243, 243, 243, 1.0)),
-                          ),
-                          const SizedBox(width: 10),
-                          ElevatedButton(
-                            onPressed: () async {
-                              setState(() {
-                                _exporting = true;
-                              });
-
-                              switch (_exportType) {
-                                case DataGridExportType.currentPage:
-                                  _exportDataToCsv();
-                                  break;
-                                case DataGridExportType.allPages:
-                                  _allPageDataExport();
-                                  break;
-                                case DataGridExportType.asyncEmail:
-                                  _asyncEmailDataExport();
-                                  break;
-                              }
-                            },
                             child: const Text(
-                              "EXPORT DATA",
-                              style: TextStyle(color: Colors.white),
+                              "CANCEL",
+                              style: TextStyle(color: Color.fromRGBO(105, 105, 105, 1)),
                             ),
-                            style: widget.overrideButtonStyle != null
-                                ? widget.overrideButtonStyle!.copyWith(backgroundColor: MaterialStateProperty.all(widget.primaryColor))
-                                : Theme.of(context).elevatedButtonTheme.style != null
-                                    ? Theme.of(context)
-                                        .elevatedButtonTheme
-                                        .style!
-                                        .copyWith(backgroundColor: MaterialStateProperty.all(widget.primaryColor))
-                                    : ElevatedButton.styleFrom(backgroundColor: widget.primaryColor),
                           ),
+                          if (MediaQuery.of(context).size.width > 450) ...[
+                            const SizedBox(width: 10),
+                            ElevatedButton(
+                              onPressed: () async {
+                                setState(() {
+                                  _exporting = true;
+                                });
+
+                                switch (_exportType) {
+                                  case DataGridExportType.currentPage:
+                                    _exportDataToCsv();
+                                    break;
+                                  case DataGridExportType.allPages:
+                                    _allPageDataExport();
+                                    break;
+                                  case DataGridExportType.asyncEmail:
+                                    _asyncEmailDataExport();
+                                    break;
+                                }
+                              },
+                              style: widget.overrideButtonStyle != null
+                                  ? widget.overrideButtonStyle!.copyWith(backgroundColor: MaterialStateProperty.all(widget.primaryColor))
+                                  : Theme.of(context).elevatedButtonTheme.style != null
+                                      ? Theme.of(context)
+                                          .elevatedButtonTheme
+                                          .style!
+                                          .copyWith(backgroundColor: MaterialStateProperty.all(widget.primaryColor))
+                                      : ElevatedButton.styleFrom(backgroundColor: widget.primaryColor),
+                              child: const Text(
+                                "EXPORT DATA",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ]
                         ],
                       ),
+                      if (MediaQuery.of(context).size.width <= 450) ...[
+                        const SizedBox(height: 10),
+                        ElevatedButton(
+                          onPressed: () async {
+                            setState(() {
+                              _exporting = true;
+                            });
+
+                            switch (_exportType) {
+                              case DataGridExportType.currentPage:
+                                _exportDataToCsv();
+                                break;
+                              case DataGridExportType.allPages:
+                                _allPageDataExport();
+                                break;
+                              case DataGridExportType.asyncEmail:
+                                _asyncEmailDataExport();
+                                break;
+                            }
+                          },
+                          style: widget.overrideButtonStyle != null
+                              ? widget.overrideButtonStyle!.copyWith(backgroundColor: MaterialStateProperty.all(widget.primaryColor))
+                              : Theme.of(context).elevatedButtonTheme.style != null
+                                  ? Theme.of(context)
+                                      .elevatedButtonTheme
+                                      .style!
+                                      .copyWith(backgroundColor: MaterialStateProperty.all(widget.primaryColor))
+                                  : ElevatedButton.styleFrom(backgroundColor: widget.primaryColor),
+                          child: const Text(
+                            "EXPORT DATA",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ]
                     ],
                   ),
                 ),
