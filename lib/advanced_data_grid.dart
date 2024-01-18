@@ -1016,7 +1016,7 @@ class _DataGridState extends State<DataGrid> {
                                     : Container(),
                               ],
                             ),
-                          ),
+                          )
                         
                       : Container(),
                 ),
