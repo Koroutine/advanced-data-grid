@@ -721,8 +721,8 @@ class _DataGridState extends State<DataGrid> {
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                            Expanded(
-                                child: SingleChildScrollView(
+                            
+                                SingleChildScrollView(
                               reverse: true,
                               scrollDirection: Axis.horizontal,
                               child: Row(children: [
@@ -892,7 +892,7 @@ class _DataGridState extends State<DataGrid> {
                                   ],
                                 )
                               ]),
-                            )),
+                            ),
                           ],
                         ),
                       )
@@ -908,8 +908,7 @@ class _DataGridState extends State<DataGrid> {
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 5),
                   height: 48,
                   child: !widget.source.isLoading
-                      ? Expanded(
-                          child: SingleChildScrollView(
+                      ? SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
@@ -1018,7 +1017,7 @@ class _DataGridState extends State<DataGrid> {
                               ],
                             ),
                           ),
-                        )
+                        
                       : Container(),
                 ),
               ],
