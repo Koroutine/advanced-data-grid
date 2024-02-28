@@ -7,7 +7,8 @@ import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 typedef Json = Map<String, dynamic>;
-typedef DataSourceLoader = Future<DataSourceResponse?> Function(int page, int limit);
+typedef DataSourceLoader = Future<DataSourceResponse?> Function(
+    int page, int limit);
 
 /// Response from a class that implements the DataSource abstract class
 ///
@@ -32,7 +33,8 @@ class DataSourceResponse {
     this.json,
   );
 
-  factory DataSourceResponse.fromJson(String body, String? responseListKey, num currentPage) {
+  factory DataSourceResponse.fromJson(
+      String body, String? responseListKey, num currentPage) {
     try {
       return DataSourceResponse.fromMap(
         jsonDecode(body),
@@ -45,15 +47,19 @@ class DataSourceResponse {
     }
   }
 
-  factory DataSourceResponse.fromMap(Map<String, dynamic> json, String? responseListKey, num currentPage) {
+  factory DataSourceResponse.fromMap(
+      Map<String, dynamic> json, String? responseListKey, num currentPage) {
     var items;
     if (responseListKey != null) {
-      items = ((json[responseListKey] as List).map((e) => e as Map<String, dynamic>).toList());
+      items = ((json[responseListKey] as List)
+          .map((e) => e as Map<String, dynamic>)
+          .toList());
     } else {
       items = ((json as List).map((e) => e as Map<String, dynamic>).toList());
     }
 
-    return DataSourceResponse(items, currentPage, json['pageSize'] as num? ?? 15, json['rows'] as num? ?? 0, json);
+    return DataSourceResponse(items, currentPage,
+        json['pageSize'] as num? ?? 15, json['rows'] as num? ?? 0, json);
   }
 }
 
@@ -86,7 +92,8 @@ abstract class DataSource extends ChangeNotifier {
   Map<String, List<DataFilter>> _filter;
   bool _isZeroIndexed = false;
 
-  DataSource(this._page, this._pageLimit, this._sort, this._filter, this._isZeroIndexed);
+  DataSource(this._page, this._pageLimit, this._sort, this._filter,
+      this._isZeroIndexed);
 
   UnmodifiableListView<Json> get items => UnmodifiableListView(_items);
   bool get isLoading => _isLoading;
@@ -202,7 +209,8 @@ abstract class DataSource extends ChangeNotifier {
     return refresh();
   }
 
-  Future<DataSourceResponse?> exportAllRows(DataGridExportType exportType) async {
+  Future<DataSourceResponse?> exportAllRows(
+      DataGridExportType exportType) async {
     var res = await loader(exportType);
 
     return res;
@@ -314,7 +322,9 @@ class DataSourceApi extends DataSource {
     for (var e in _filter.entries) {
       var key = e.key;
       var values = e.value;
-      if (searchQueryParameter != "" && key == searchQueryParameter && values.isNotEmpty) {
+      if (searchQueryParameter != "" &&
+          key == searchQueryParameter &&
+          values.isNotEmpty) {
         searchInUse = true;
       }
     }
@@ -371,11 +381,15 @@ class DataSourceApi extends DataSource {
     for (var e in _filter.entries) {
       var key = e.key;
       var values = e.value;
-      if (searchQueryParameter != "" && key == searchQueryParameter && values.isNotEmpty) {
+      if (searchQueryParameter != "" &&
+          key == searchQueryParameter &&
+          values.isNotEmpty) {
         searchInUse = true;
         urlQuery[key] = values
             .where((e) => e.value != null)
-            .map((e) => e.operator == null ? e.value! : "${e.operator.toString().split(".").last.toLowerCase()}:${e.value}")
+            .map((e) => e.operator == null
+                ? e.value!
+                : "${e.operator.toString().split(".").last.toLowerCase()}:${e.value}")
             .toList();
       }
     }
@@ -387,14 +401,18 @@ class DataSourceApi extends DataSource {
         if (values.isNotEmpty) {
           urlQuery[key] = values
               .where((e) => e.value != null)
-              .map((e) => e.operator == null ? e.value! : "${e.operator.toString().split(".").last.toLowerCase()}:${e.value}")
+              .map((e) => e.operator == null
+                  ? e.value!
+                  : "${e.operator.toString().split(".").last.toLowerCase()}:${e.value}")
               .toList();
         }
       } else if (!disableFiltersOnSearch) {
         if (values.isNotEmpty) {
           urlQuery[key] = values
               .where((e) => e.value != null)
-              .map((e) => e.operator == null ? e.value! : "${e.operator.toString().split(".").last.toLowerCase()}:${e.value}")
+              .map((e) => e.operator == null
+                  ? e.value!
+                  : "${e.operator.toString().split(".").last.toLowerCase()}:${e.value}")
               .toList();
         }
       } else {}
@@ -413,15 +431,20 @@ class DataSourceApi extends DataSource {
       });
     }
 
-    Response r =
-        await get(Uri.parse(domain + (searchInUse && searchPath != "" ? searchPath : path)).replace(queryParameters: urlQuery), headers: headers);
+    Response r = await get(
+        Uri.parse(
+                domain + (searchInUse && searchPath != "" ? searchPath : path))
+            .replace(queryParameters: urlQuery),
+        headers: headers);
 
     if (r.statusCode == 200) {
       if (exportType == DataGridExportType.asyncEmail) {
         return DataSourceResponse([], 1, 1, 1, {});
       }
 
-      var data = DataSourceResponse.fromJson(r.body, responseListKey, _page);
+      var data = DataSourceResponse.fromJson(
+          utf8.decode(r.bodyBytes), responseListKey, _page);
+
       return data;
     }
 
