@@ -708,7 +708,8 @@ class _DataGridState extends State<DataGrid> {
                         padding: const EdgeInsets.fromLTRB(16, 16, 16, 5),
                         child: Row(
                           children: [
-                            Expanded(
+                            Container(
+                              padding: const EdgeInsets.only(right: 10),
                               child: RichText(
                                 text: TextSpan(
                                   children: [
@@ -740,145 +741,41 @@ class _DataGridState extends State<DataGrid> {
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                            widget.actions != null
-                                ? Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 5),
-                                    child: Row(
-                                      children: widget.actions!,
-                                    ),
-                                  )
-                                : Container(),
-                            widget.exportTypes.isNotEmpty && !widget.source.isLoading && widget.source.items.isNotEmpty
-                                ? Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 5),
-                                    child: TextButton(
-                                      onPressed: () {
-                                        showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) {
-                                              return ExportDataGridModal(
-                                                title: widget.title ?? "Data",
-                                                columns: widget.builders
-                                                    .where((column) => column.includeInExport == true)
-                                                    .toList(),
-                                                source: widget.source,
-                                                exportTypes: widget.exportTypes,
-                                                overrideButtonStyle: widget.overrideElevatedButtonStyle,
-                                                primaryColor:
-                                                    widget.primaryColor ?? Theme.of(context).colorScheme.primary,
-                                              );
-                                            });
-                                      },
-                                      style: widget.overrideTextButtonStyle != null
-                                          ? widget.overrideTextButtonStyle!
-                                              .copyWith(padding: MaterialStateProperty.all(EdgeInsets.zero))
-                                          : Theme.of(context).textButtonTheme.style != null
-                                              ? Theme.of(context)
-                                                  .textButtonTheme
-                                                  .style!
-                                                  .copyWith(padding: MaterialStateProperty.all(EdgeInsets.zero))
-                                              : TextButton.styleFrom()
-                                                  .copyWith(padding: MaterialStateProperty.all(EdgeInsets.zero)),
-                                      child: Container(
-                                        padding: const EdgeInsets.fromLTRB(16, 5, 16, 5),
-                                        height: 36,
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(
-                                              Icons.download,
-                                              color: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
-                                              size: 24,
-                                            ),
-                                            Container(
-                                              padding: EdgeInsets.fromLTRB(
-                                                  MediaQuery.of(context).size.width >= _mobileWidth ? 10 : 0,
-                                                  0,
-                                                  MediaQuery.of(context).size.width >= _mobileWidth ? 6 : 0,
-                                                  0),
-                                              child: MediaQuery.of(context).size.width >= _mobileWidth
-                                                  ? const Text(
-                                                      "EXPORT",
-                                                      style: TextStyle(
-                                                          color: Color.fromRGBO(105, 105, 105, 1), fontSize: 14),
-                                                    )
-                                                  : Container(),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                : Container(),
-                            Row(
-                              children: [
-                                widget.mainSearchColumn != null
-                                    ? MediaQuery.of(context).size.width > _mobileWidth
-                                        ? _getSearchField()
-                                        : TextButton(
+                            Expanded(
+                              child: SingleChildScrollView(
+                                reverse: true,
+                                scrollDirection: Axis.horizontal,
+                                child: Row(children: [
+                                  widget.actions != null
+                                      ? Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 5),
+                                          child: Row(
+                                            children: widget.actions!,
+                                          ),
+                                        )
+                                      : Container(),
+                                  widget.exportTypes.isNotEmpty &&
+                                          !widget.source.isLoading &&
+                                          widget.source.items.isNotEmpty
+                                      ? Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 5),
+                                          child: TextButton(
                                             onPressed: () {
                                               showDialog(
-                                                context: context,
-                                                builder: (BuildContext context) {
-                                                  return Dialog(
-                                                    shape:
-                                                        RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                                    child: ConstrainedBox(
-                                                      constraints: BoxConstraints(
-                                                          maxWidth: MediaQuery.of(context).size.width > 364
-                                                              ? 332
-                                                              : MediaQuery.of(context).size.width - 32),
-                                                      child: Container(
-                                                        padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
-                                                        child: Column(
-                                                          mainAxisSize: MainAxisSize.min,
-                                                          children: [
-                                                            Row(
-                                                              children: [
-                                                                const Expanded(
-                                                                  child: Text(
-                                                                    "Search",
-                                                                    style: TextStyle(
-                                                                      fontWeight: FontWeight.w700,
-                                                                      color: Color.fromRGBO(54, 54, 54, 1),
-                                                                      fontSize: 16,
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                                IconButton(
-                                                                  onPressed: () {
-                                                                    Navigator.of(context).pop();
-                                                                  },
-                                                                  icon: const Icon(Icons.close_rounded),
-                                                                  color: const Color.fromRGBO(54, 54, 54, 1),
-                                                                  splashRadius: 30,
-                                                                  padding: const EdgeInsets.all(5),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            _getSearchField(),
-                                                            const SizedBox(height: 10),
-                                                            Row(
-                                                              mainAxisAlignment: MainAxisAlignment.center,
-                                                              children: [
-                                                                ElevatedButton(
-                                                                  onPressed: () {
-                                                                    Navigator.of(context).pop();
-                                                                  },
-                                                                  style: widget.overrideElevatedButtonStyle ??
-                                                                      (Theme.of(context).elevatedButtonTheme.style ??
-                                                                          ElevatedButton.styleFrom()),
-                                                                  child: const Text("SEARCH"),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  );
-                                                },
-                                              );
+                                                  context: context,
+                                                  builder: (BuildContext context) {
+                                                    return ExportDataGridModal(
+                                                      title: widget.title ?? "Data",
+                                                      columns: widget.builders
+                                                          .where((column) => column.includeInExport == true)
+                                                          .toList(),
+                                                      source: widget.source,
+                                                      exportTypes: widget.exportTypes,
+                                                      overrideButtonStyle: widget.overrideElevatedButtonStyle,
+                                                      primaryColor:
+                                                          widget.primaryColor ?? Theme.of(context).colorScheme.primary,
+                                                    );
+                                                  });
                                             },
                                             style: widget.overrideTextButtonStyle != null
                                                 ? widget.overrideTextButtonStyle!
@@ -897,7 +794,7 @@ class _DataGridState extends State<DataGrid> {
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   Icon(
-                                                    Icons.search,
+                                                    Icons.download,
                                                     color: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
                                                     size: 24,
                                                   ),
@@ -909,7 +806,7 @@ class _DataGridState extends State<DataGrid> {
                                                         0),
                                                     child: MediaQuery.of(context).size.width >= _mobileWidth
                                                         ? const Text(
-                                                            "SEARCH",
+                                                            "EXPORT",
                                                             style: TextStyle(
                                                                 color: Color.fromRGBO(105, 105, 105, 1), fontSize: 14),
                                                           )
@@ -918,10 +815,128 @@ class _DataGridState extends State<DataGrid> {
                                                 ],
                                               ),
                                             ),
-                                          )
-                                    : Container(),
-                              ],
-                            )
+                                          ),
+                                        )
+                                      : Container(),
+                                  Row(
+                                    children: [
+                                      widget.mainSearchColumn != null
+                                          ? MediaQuery.of(context).size.width > _mobileWidth
+                                              ? _getSearchField()
+                                              : TextButton(
+                                                  onPressed: () {
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (BuildContext context) {
+                                                        return Dialog(
+                                                          shape: RoundedRectangleBorder(
+                                                              borderRadius: BorderRadius.circular(10)),
+                                                          child: ConstrainedBox(
+                                                            constraints: BoxConstraints(
+                                                                maxWidth: MediaQuery.of(context).size.width > 364
+                                                                    ? 332
+                                                                    : MediaQuery.of(context).size.width - 32),
+                                                            child: Container(
+                                                              padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
+                                                              child: Column(
+                                                                mainAxisSize: MainAxisSize.min,
+                                                                children: [
+                                                                  Row(
+                                                                    children: [
+                                                                      const Expanded(
+                                                                        child: Text(
+                                                                          "Search",
+                                                                          style: TextStyle(
+                                                                            fontWeight: FontWeight.w700,
+                                                                            color: Color.fromRGBO(54, 54, 54, 1),
+                                                                            fontSize: 16,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                      IconButton(
+                                                                        onPressed: () {
+                                                                          Navigator.of(context).pop();
+                                                                        },
+                                                                        icon: const Icon(Icons.close_rounded),
+                                                                        color: const Color.fromRGBO(54, 54, 54, 1),
+                                                                        splashRadius: 30,
+                                                                        padding: const EdgeInsets.all(5),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                  _getSearchField(),
+                                                                  const SizedBox(height: 10),
+                                                                  Row(
+                                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                                    children: [
+                                                                      ElevatedButton(
+                                                                        onPressed: () {
+                                                                          Navigator.of(context).pop();
+                                                                        },
+                                                                        style: widget.overrideElevatedButtonStyle ??
+                                                                            (Theme.of(context)
+                                                                                    .elevatedButtonTheme
+                                                                                    .style ??
+                                                                                ElevatedButton.styleFrom()),
+                                                                        child: const Text("SEARCH"),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        );
+                                                      },
+                                                    );
+                                                  },
+                                                  style: widget.overrideTextButtonStyle != null
+                                                      ? widget.overrideTextButtonStyle!
+                                                          .copyWith(padding: MaterialStateProperty.all(EdgeInsets.zero))
+                                                      : Theme.of(context).textButtonTheme.style != null
+                                                          ? Theme.of(context).textButtonTheme.style!.copyWith(
+                                                              padding: MaterialStateProperty.all(EdgeInsets.zero))
+                                                          : TextButton.styleFrom().copyWith(
+                                                              padding: MaterialStateProperty.all(EdgeInsets.zero)),
+                                                  child: Container(
+                                                    padding: const EdgeInsets.fromLTRB(16, 5, 16, 5),
+                                                    height: 36,
+                                                    child: Row(
+                                                      mainAxisSize: MainAxisSize.min,
+                                                      children: [
+                                                        Icon(
+                                                          Icons.search,
+                                                          color: widget.primaryColor ??
+                                                              Theme.of(context).colorScheme.primary,
+                                                          size: 24,
+                                                        ),
+                                                        Container(
+                                                          padding: EdgeInsets.fromLTRB(
+                                                              MediaQuery.of(context).size.width >= _mobileWidth
+                                                                  ? 10
+                                                                  : 0,
+                                                              0,
+                                                              MediaQuery.of(context).size.width >= _mobileWidth ? 6 : 0,
+                                                              0),
+                                                          child: MediaQuery.of(context).size.width >= _mobileWidth
+                                                              ? const Text(
+                                                                  "SEARCH",
+                                                                  style: TextStyle(
+                                                                      color: Color.fromRGBO(105, 105, 105, 1),
+                                                                      fontSize: 14),
+                                                                )
+                                                              : Container(),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                )
+                                          : Container(),
+                                    ],
+                                  )
+                                ]),
+                              ),
+                            ),
                           ],
                         ),
                       )
@@ -937,122 +952,125 @@ class _DataGridState extends State<DataGrid> {
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 5),
                   height: 48,
                   child: !widget.source.isLoading
-                      ? Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MediaQuery.of(context).size.width > _mobileWidth
-                              ? MainAxisAlignment.end
-                              : MainAxisAlignment.center,
-                          children: [
-                            widget.fixedPageLimit == null && MediaQuery.of(context).size.width > _mobileWidth
-                                ? Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      const Text("Rows per page:",
-                                          style: TextStyle(color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12)),
-                                      Container(
-                                        width: 50,
-                                        margin: const EdgeInsets.only(left: 10, right: 16),
-                                        child: DropdownButtonHideUnderline(
-                                          child: DropdownButton<num>(
-                                            isDense: true,
-                                            isExpanded: true,
-                                            borderRadius: BorderRadius.circular(6),
-                                            items: const [
-                                              DropdownMenuItem<num>(
-                                                  value: 15,
-                                                  child: Text("15",
-                                                      style: TextStyle(
-                                                          color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12))),
-                                              DropdownMenuItem<num>(
-                                                  value: 30,
-                                                  child: Text("30",
-                                                      style: TextStyle(
-                                                          color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12))),
-                                              DropdownMenuItem<num>(
-                                                  value: 60,
-                                                  child: Text("60",
-                                                      style: TextStyle(
-                                                          color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12))),
-                                              DropdownMenuItem<num>(
-                                                  value: 100,
-                                                  child: Text("100",
-                                                      style: TextStyle(
-                                                          color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12))),
-                                            ],
-                                            value: widget.source.pageSize,
-                                            onChanged: (limit) {
-                                              widget.source.setPageLimit(limit ?? 15);
-                                            },
+                      ? SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MediaQuery.of(context).size.width > _mobileWidth
+                                ? MainAxisAlignment.end
+                                : MainAxisAlignment.center,
+                            children: [
+                              widget.fixedPageLimit == null && MediaQuery.of(context).size.width > _mobileWidth
+                                  ? Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Text("Rows per page:",
+                                            style: TextStyle(color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12)),
+                                        Container(
+                                          width: 50,
+                                          margin: const EdgeInsets.only(left: 10, right: 16),
+                                          child: DropdownButtonHideUnderline(
+                                            child: DropdownButton<num>(
+                                              isDense: true,
+                                              isExpanded: true,
+                                              borderRadius: BorderRadius.circular(6),
+                                              items: const [
+                                                DropdownMenuItem<num>(
+                                                    value: 15,
+                                                    child: Text("15",
+                                                        style: TextStyle(
+                                                            color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12))),
+                                                DropdownMenuItem<num>(
+                                                    value: 30,
+                                                    child: Text("30",
+                                                        style: TextStyle(
+                                                            color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12))),
+                                                DropdownMenuItem<num>(
+                                                    value: 60,
+                                                    child: Text("60",
+                                                        style: TextStyle(
+                                                            color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12))),
+                                                DropdownMenuItem<num>(
+                                                    value: 100,
+                                                    child: Text("100",
+                                                        style: TextStyle(
+                                                            color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12))),
+                                              ],
+                                              value: widget.source.pageSize,
+                                              onChanged: (limit) {
+                                                widget.source.setPageLimit(limit ?? 15);
+                                              },
+                                            ),
                                           ),
-                                        ),
-                                      )
-                                    ],
-                                  )
-                                : Container(),
-                            !widget.hideRowCount
-                                ? Text(
-                                    widget.hidePageSelection
-                                        ? "${widget.source.totalCount} rows"
-                                        : "${MediaQuery.of(context).size.width > _mobileWidth ? "Showing " : ""}${(widget.source.currentPage * widget.source.pageSize) - (widget.source.pageSize - 1)}-${((widget.source.currentPage * widget.source.pageSize) - widget.source.pageSize) + widget.source.items.length} of ${widget.source.totalCount}",
-                                    style: const TextStyle(
-                                      color: Color.fromRGBO(105, 105, 105, 1),
-                                      fontSize: 12,
-                                    ),
-                                  )
-                                : Container(),
-                            SizedBox(width: !widget.hideRowCount ? 16 : 0),
-                            !widget.hidePageSelection
-                                ? IconButton(
-                                    onPressed: (widget.source.isZeroIndexed && widget.source.currentPage > 0) ||
-                                            (!widget.source.isZeroIndexed && widget.source.currentPage > 1)
-                                        ? () {
-                                            widget.source.loadPage(widget.source.isZeroIndexed ? 0 : 1);
-                                          }
-                                        : null,
-                                    icon: const Icon(
-                                      Icons.skip_previous_rounded,
-                                    ),
-                                    color: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
-                                  )
-                                : Container(),
-                            IconButton(
-                              onPressed: (widget.source.isZeroIndexed && widget.source.currentPage > 0) ||
-                                      (!widget.source.isZeroIndexed && widget.source.currentPage > 1)
-                                  ? () {
-                                      widget.source.loadPage(widget.source.currentPage - 1);
-                                    }
-                                  : null,
-                              icon: const Icon(
-                                Icons.keyboard_arrow_left_rounded,
+                                        )
+                                      ],
+                                    )
+                                  : Container(),
+                              !widget.hideRowCount
+                                  ? Text(
+                                      widget.hidePageSelection
+                                          ? "${widget.source.totalCount} rows"
+                                          : "${MediaQuery.of(context).size.width > _mobileWidth ? "Showing " : ""}${(widget.source.currentPage * widget.source.pageSize) - (widget.source.pageSize - 1)}-${((widget.source.currentPage * widget.source.pageSize) - widget.source.pageSize) + widget.source.items.length} of ${widget.source.totalCount}",
+                                      style: const TextStyle(
+                                        color: Color.fromRGBO(105, 105, 105, 1),
+                                        fontSize: 12,
+                                      ),
+                                    )
+                                  : Container(),
+                              SizedBox(width: !widget.hideRowCount ? 16 : 0),
+                              !widget.hidePageSelection
+                                  ? IconButton(
+                                      onPressed: (widget.source.isZeroIndexed && widget.source.currentPage > 0) ||
+                                              (!widget.source.isZeroIndexed && widget.source.currentPage > 1)
+                                          ? () {
+                                              widget.source.loadPage(widget.source.isZeroIndexed ? 0 : 1);
+                                            }
+                                          : null,
+                                      icon: const Icon(
+                                        Icons.skip_previous_rounded,
+                                      ),
+                                      color: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
+                                    )
+                                  : Container(),
+                              IconButton(
+                                onPressed: (widget.source.isZeroIndexed && widget.source.currentPage > 0) ||
+                                        (!widget.source.isZeroIndexed && widget.source.currentPage > 1)
+                                    ? () {
+                                        widget.source.loadPage(widget.source.currentPage - 1);
+                                      }
+                                    : null,
+                                icon: const Icon(
+                                  Icons.keyboard_arrow_left_rounded,
+                                ),
+                                color: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
                               ),
-                              color: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
-                            ),
-                            !widget.hidePageSelection ? Row(children: _getPaginationButtons()) : Container(),
-                            IconButton(
-                              onPressed: widget.source.currentPage < widget.source.lastPage
-                                  ? () {
-                                      widget.source.loadPage(widget.source.currentPage + 1);
-                                    }
-                                  : null,
-                              icon: const Icon(
-                                Icons.keyboard_arrow_right_rounded,
+                              !widget.hidePageSelection ? Row(children: _getPaginationButtons()) : Container(),
+                              IconButton(
+                                onPressed: widget.source.currentPage < widget.source.lastPage
+                                    ? () {
+                                        widget.source.loadPage(widget.source.currentPage + 1);
+                                      }
+                                    : null,
+                                icon: const Icon(
+                                  Icons.keyboard_arrow_right_rounded,
+                                ),
+                                color: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
                               ),
-                              color: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
-                            ),
-                            !widget.hidePageSelection
-                                ? IconButton(
-                                    onPressed: widget.source.currentPage < widget.source.lastPage
-                                        ? () {
-                                            widget.source.loadPage(widget.source.lastPage);
-                                          }
-                                        : null,
-                                    icon: const Icon(
-                                      Icons.skip_next_rounded,
-                                    ),
-                                    color: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
-                                  )
-                                : Container(),
-                          ],
+                              !widget.hidePageSelection
+                                  ? IconButton(
+                                      onPressed: widget.source.currentPage < widget.source.lastPage
+                                          ? () {
+                                              widget.source.loadPage(widget.source.lastPage);
+                                            }
+                                          : null,
+                                      icon: const Icon(
+                                        Icons.skip_next_rounded,
+                                      ),
+                                      color: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
+                                    )
+                                  : Container(),
+                            ],
+                          ),
                         )
                       : Container(),
                 ),
