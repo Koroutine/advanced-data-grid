@@ -120,6 +120,7 @@ class DataGrid extends StatefulWidget {
     this.onSelectionChange,
     this.onRowTap,
     this.exportTypes = const [],
+    this.exportLimit,
     this.primaryColor,
     this.overrideElevatedButtonStyle,
     this.overrideTextButtonStyle,
@@ -186,6 +187,9 @@ class DataGrid extends StatefulWidget {
 
   /// If provided, will enable Export functionality from the Grid via the specified types.
   final List<DataGridExportType> exportTypes;
+
+  /// If provided, the "All Pages" text will change to "All Pages (limited to {exportLimit} rows)"
+  final String? exportLimit;
 
   /// Override the Primary Colour of the Grid. By default will use Theme Primary Colour.
   final Color? primaryColor;
@@ -771,6 +775,7 @@ class _DataGridState extends State<DataGrid> {
                                                           .toList(),
                                                       source: widget.source,
                                                       exportTypes: widget.exportTypes,
+                                                      exportLimit: widget.exportLimit,
                                                       overrideButtonStyle: widget.overrideElevatedButtonStyle,
                                                       primaryColor:
                                                           widget.primaryColor ?? Theme.of(context).colorScheme.primary,

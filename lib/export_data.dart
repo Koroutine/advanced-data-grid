@@ -14,12 +14,14 @@ class ExportDataGridModal extends StatefulWidget {
     required this.columns,
     required this.source,
     required this.exportTypes,
+    this.exportLimit,
     this.overrideButtonStyle,
     required this.primaryColor,
   });
 
   final String title;
   final List<DataGridColumn> columns;
+  final String? exportLimit;
 
   /// The source for data received
   final DataSource source;
@@ -323,7 +325,9 @@ class _ExportDataGridModalState extends State<ExportDataGridModal> {
                           // All pages data export
                           widget.exportTypes.contains(DataGridExportType.allPages)
                               ? RadioListTile<DataGridExportType>(
-                                  title: const Text('All Pages'),
+                                  title: Text(
+                                    'All Pages ${widget.exportLimit != null ? '(limited to ${widget.exportLimit} rows)' : ''}',
+                                  ),
                                   activeColor: widget.primaryColor,
                                   tileColor: _exportType == DataGridExportType.allPages ? widget.primaryColor.withOpacity(0.1) : Colors.white,
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
