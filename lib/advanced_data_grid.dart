@@ -100,39 +100,39 @@ class DataGridColumn {
 /// the DataSourceResponse struct containing JSON allowing for DataGrid to
 /// be easily reused for many different types of Data, from differing sources.
 class DataGrid extends StatefulWidget {
-  const DataGrid({
-    super.key,
-    required this.source,
-    required this.builders,
-    this.title,
-    this.subTitle,
-    this.actions,
-    this.wrapWithCard = false,
-    this.minWidth,
-    required this.titleBuilder,
-    this.enableTextSelection = false,
-    this.enableMultiSort = false,
-    this.mainSearchColumn,
-    this.disableFiltersOnMainSearch = true,
-    this.showCheckboxColumn = false,
-    this.identifierColumnName,
-    this.selectedRows,
-    this.onSelectionChange,
-    this.onRowTap,
-    this.exportTypes = const [],
-    this.exportLimit,
-    this.primaryColor,
-    this.overrideElevatedButtonStyle,
-    this.overrideTextButtonStyle,
-    this.fixedPageLimit,
-    this.hidePageSelection = false,
-    this.hideRowCount = false,
-    this.enableSearchColumns = false,
-    this.searchColumnBuilders = const [],
-    this.searchColumnIcon = true,
-    this.fieldsWithSearchresField = '',
-    this.searchDebouncerDelay = 500,
-  });
+  const DataGrid(
+      {super.key,
+      required this.source,
+      required this.builders,
+      this.title,
+      this.subTitle,
+      this.actions,
+      this.wrapWithCard = false,
+      this.minWidth,
+      required this.titleBuilder,
+      this.enableTextSelection = false,
+      this.enableMultiSort = false,
+      this.mainSearchColumn,
+      this.disableFiltersOnMainSearch = true,
+      this.showCheckboxColumn = false,
+      this.identifierColumnName,
+      this.selectedRows,
+      this.onSelectionChange,
+      this.onRowTap,
+      this.exportTypes = const [],
+      this.exportLimit,
+      this.primaryColor,
+      this.overrideElevatedButtonStyle,
+      this.overrideTextButtonStyle,
+      this.fixedPageLimit,
+      this.hidePageSelection = false,
+      this.hideRowCount = false,
+      this.enableSearchColumns = false,
+      this.searchColumnBuilders = const [],
+      this.searchColumnIcon = true,
+      this.fieldsWithSearchresField = '',
+      this.searchDebouncerDelay = 500,
+      this.theme});
 
   /// Data Source for the Table.
   final DataSource source;
@@ -224,12 +224,15 @@ class DataGrid extends StatefulWidget {
   /// Debounce delay for search
   final int searchDebouncerDelay;
 
+  // Theme for the DataGrid
+  final ThemeData? theme;
+
   @override
   State<DataGrid> createState() => _DataGridState();
 }
 
-List<DataCell> _getSearchCells(List<DataGridColumn> searchColumnBuilders, List<DataGridColumn> builders,
-    Map<String, dynamic> data, bool iconColumn, String fieldsWithSearchresField) {
+List<DataCell> _getSearchCells(List<DataGridColumn> searchColumnBuilders, List<DataGridColumn> builders, Map<String, dynamic> data, bool iconColumn,
+    String fieldsWithSearchresField) {
   int searchColumnBuilderslength = searchColumnBuilders.length;
   List<DataGridColumn> searchColumns = [];
   searchColumns.addAll(searchColumnBuilders);
@@ -346,8 +349,7 @@ class _DataGridState extends State<DataGrid> {
                     enabled: !_searchInUse,
                     padding: const EdgeInsets.all(0),
                     child: hasFilter
-                        ? Icon(Icons.filter_alt_off_rounded,
-                            color: widget.primaryColor ?? Theme.of(context).colorScheme.primary)
+                        ? Icon(Icons.filter_alt_off_rounded, color: widget.primaryColor ?? Theme.of(context).colorScheme.primary)
                         : const Icon(Icons.filter_alt_rounded, color: Colors.grey),
                     itemBuilder: (context) {
                       return [
@@ -393,11 +395,9 @@ class _DataGridState extends State<DataGrid> {
                       Align(
                         alignment: Alignment.centerLeft,
                         child: sortDirection == "asc"
-                            ? Icon(Icons.arrow_upward_rounded,
-                                color: widget.primaryColor ?? Theme.of(context).colorScheme.primary)
+                            ? Icon(Icons.arrow_upward_rounded, color: widget.primaryColor ?? Theme.of(context).colorScheme.primary)
                             : sortDirection == "desc"
-                                ? Icon(Icons.arrow_downward_rounded,
-                                    color: widget.primaryColor ?? Theme.of(context).colorScheme.primary)
+                                ? Icon(Icons.arrow_downward_rounded, color: widget.primaryColor ?? Theme.of(context).colorScheme.primary)
                                 : Container(),
                       ),
                       widget.source.columnSorts.length > 1
@@ -413,10 +413,7 @@ class _DataGridState extends State<DataGrid> {
                                 ),
                                 child: Center(
                                   child: Text(
-                                    (widget.source.columnSorts.keys
-                                                .toList()
-                                                .indexOf(entry.value.filterColumnName ?? entry.value.column) +
-                                            1)
+                                    (widget.source.columnSorts.keys.toList().indexOf(entry.value.filterColumnName ?? entry.value.column) + 1)
                                         .toString(),
                                     style: const TextStyle(
                                       color: Colors.white,
@@ -459,11 +456,9 @@ class _DataGridState extends State<DataGrid> {
                         }
 
                         if (widget.enableMultiSort) {
-                          widget.source.addSort(entry.value.filterColumnName ?? entry.value.column,
-                              sortDirection == "desc" ? "asc" : "desc");
+                          widget.source.addSort(entry.value.filterColumnName ?? entry.value.column, sortDirection == "desc" ? "asc" : "desc");
                         } else {
-                          widget.source.replaceAllSorts(entry.value.filterColumnName ?? entry.value.column,
-                              sortDirection == "desc" ? "asc" : "desc");
+                          widget.source.replaceAllSorts(entry.value.filterColumnName ?? entry.value.column, sortDirection == "desc" ? "asc" : "desc");
                         }
                       },
                       child: titleContent,
@@ -501,10 +496,8 @@ class _DataGridState extends State<DataGrid> {
           contentPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
           isDense: true,
           border: const OutlineInputBorder(borderSide: BorderSide(color: Color.fromRGBO(141, 141, 141, 1), width: 0.5)),
-          enabledBorder:
-              const OutlineInputBorder(borderSide: BorderSide(color: Color.fromRGBO(141, 141, 141, 1), width: 0.5)),
-          focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: widget.primaryColor ?? Theme.of(context).colorScheme.primary)),
+          enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: Color.fromRGBO(141, 141, 141, 1), width: 0.5)),
+          focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: widget.primaryColor ?? Theme.of(context).colorScheme.primary)),
           errorMaxLines: 3,
           errorBorder: const OutlineInputBorder(borderSide: BorderSide(color: Color.fromRGBO(226, 106, 103, 1))),
           focusColor: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
@@ -518,8 +511,7 @@ class _DataGridState extends State<DataGrid> {
             size: 20,
           ),
           constraints: const BoxConstraints(maxHeight: 240),
-          disabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: const Color.fromRGBO(141, 141, 141, 1).withOpacity(0.5), width: 0.5)),
+          disabledBorder: OutlineInputBorder(borderSide: BorderSide(color: const Color.fromRGBO(141, 141, 141, 1).withOpacity(0.5), width: 0.5)),
         ),
         textInputAction: TextInputAction.none,
       ),
@@ -536,9 +528,7 @@ class _DataGridState extends State<DataGrid> {
           "$p",
           style: TextStyle(
             fontWeight: p == widget.source.currentPage ? FontWeight.bold : FontWeight.normal,
-            color: p == widget.source.currentPage
-                ? widget.primaryColor ?? Theme.of(context).colorScheme.primary
-                : Colors.grey,
+            color: p == widget.source.currentPage ? widget.primaryColor ?? Theme.of(context).colorScheme.primary : Colors.grey,
           ),
         ),
       );
@@ -623,15 +613,12 @@ class _DataGridState extends State<DataGrid> {
 
                       return DataCell(Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Align(
-                              alignment: entry.value.alignment,
-                              child: entry.value.builder(data, cellData, entry.key))));
+                          child: Align(alignment: entry.value.alignment, child: entry.value.builder(data, cellData, entry.key))));
                     }).toList()),
               );
 
               if (_searchInUse &&
-                  _getSearchCells(widget.searchColumnBuilders ?? [], widget.builders, data, widget.searchColumnIcon,
-                          widget.fieldsWithSearchresField)
+                  _getSearchCells(widget.searchColumnBuilders ?? [], widget.builders, data, widget.searchColumnIcon, widget.fieldsWithSearchresField)
                       .isNotEmpty &&
                   widget.enableSearchColumns) {
                 rows.add(
@@ -657,6 +644,8 @@ class _DataGridState extends State<DataGrid> {
             checkboxHorizontalMargin: 12,
             columnSpacing: 0,
             showCheckboxColumn: widget.showCheckboxColumn,
+            headingCheckboxTheme: Theme.of(context).checkboxTheme,
+            datarowCheckboxTheme: Theme.of(context).checkboxTheme,
             onSelectAll: (bool? sel) {
               bool isSelected = sel == true;
 
@@ -674,11 +663,7 @@ class _DataGridState extends State<DataGrid> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const CircularProgressIndicator(),
-                        const SizedBox(height: 10),
-                        Text("Loading ${widget.title ?? ""}...")
-                      ],
+                      children: [const CircularProgressIndicator(), const SizedBox(height: 10), Text("Loading ${widget.title ?? ""}...")],
                     ),
                   )
                 : Center(
@@ -758,9 +743,7 @@ class _DataGridState extends State<DataGrid> {
                                           ),
                                         )
                                       : Container(),
-                                  widget.exportTypes.isNotEmpty &&
-                                          !widget.source.isLoading &&
-                                          widget.source.items.isNotEmpty
+                                  widget.exportTypes.isNotEmpty && !widget.source.isLoading && widget.source.items.isNotEmpty
                                       ? Container(
                                           padding: const EdgeInsets.symmetric(horizontal: 5),
                                           child: TextButton(
@@ -770,28 +753,23 @@ class _DataGridState extends State<DataGrid> {
                                                   builder: (BuildContext context) {
                                                     return ExportDataGridModal(
                                                       title: widget.title ?? "Data",
-                                                      columns: widget.builders
-                                                          .where((column) => column.includeInExport == true)
-                                                          .toList(),
+                                                      columns: widget.builders.where((column) => column.includeInExport == true).toList(),
                                                       source: widget.source,
                                                       exportTypes: widget.exportTypes,
                                                       exportLimit: widget.exportLimit,
                                                       overrideButtonStyle: widget.overrideElevatedButtonStyle,
-                                                      primaryColor:
-                                                          widget.primaryColor ?? Theme.of(context).colorScheme.primary,
+                                                      primaryColor: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
                                                     );
                                                   });
                                             },
                                             style: widget.overrideTextButtonStyle != null
-                                                ? widget.overrideTextButtonStyle!
-                                                    .copyWith(padding: MaterialStateProperty.all(EdgeInsets.zero))
+                                                ? widget.overrideTextButtonStyle!.copyWith(padding: MaterialStateProperty.all(EdgeInsets.zero))
                                                 : Theme.of(context).textButtonTheme.style != null
                                                     ? Theme.of(context)
                                                         .textButtonTheme
                                                         .style!
                                                         .copyWith(padding: MaterialStateProperty.all(EdgeInsets.zero))
-                                                    : TextButton.styleFrom()
-                                                        .copyWith(padding: MaterialStateProperty.all(EdgeInsets.zero)),
+                                                    : TextButton.styleFrom().copyWith(padding: MaterialStateProperty.all(EdgeInsets.zero)),
                                             child: Container(
                                               padding: const EdgeInsets.fromLTRB(16, 5, 16, 5),
                                               height: 36,
@@ -804,16 +782,12 @@ class _DataGridState extends State<DataGrid> {
                                                     size: 24,
                                                   ),
                                                   Container(
-                                                    padding: EdgeInsets.fromLTRB(
-                                                        MediaQuery.of(context).size.width >= _mobileWidth ? 10 : 0,
-                                                        0,
-                                                        MediaQuery.of(context).size.width >= _mobileWidth ? 6 : 0,
-                                                        0),
+                                                    padding: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width >= _mobileWidth ? 10 : 0, 0,
+                                                        MediaQuery.of(context).size.width >= _mobileWidth ? 6 : 0, 0),
                                                     child: MediaQuery.of(context).size.width >= _mobileWidth
                                                         ? const Text(
                                                             "EXPORT",
-                                                            style: TextStyle(
-                                                                color: Color.fromRGBO(105, 105, 105, 1), fontSize: 14),
+                                                            style: TextStyle(color: Color.fromRGBO(105, 105, 105, 1), fontSize: 14),
                                                           )
                                                         : Container(),
                                                   ),
@@ -834,8 +808,7 @@ class _DataGridState extends State<DataGrid> {
                                                       context: context,
                                                       builder: (BuildContext context) {
                                                         return Dialog(
-                                                          shape: RoundedRectangleBorder(
-                                                              borderRadius: BorderRadius.circular(10)),
+                                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                                           child: ConstrainedBox(
                                                             constraints: BoxConstraints(
                                                                 maxWidth: MediaQuery.of(context).size.width > 364
@@ -879,9 +852,7 @@ class _DataGridState extends State<DataGrid> {
                                                                           Navigator.of(context).pop();
                                                                         },
                                                                         style: widget.overrideElevatedButtonStyle ??
-                                                                            (Theme.of(context)
-                                                                                    .elevatedButtonTheme
-                                                                                    .style ??
+                                                                            (Theme.of(context).elevatedButtonTheme.style ??
                                                                                 ElevatedButton.styleFrom()),
                                                                         child: const Text("SEARCH"),
                                                                       ),
@@ -896,13 +867,13 @@ class _DataGridState extends State<DataGrid> {
                                                     );
                                                   },
                                                   style: widget.overrideTextButtonStyle != null
-                                                      ? widget.overrideTextButtonStyle!
-                                                          .copyWith(padding: MaterialStateProperty.all(EdgeInsets.zero))
+                                                      ? widget.overrideTextButtonStyle!.copyWith(padding: MaterialStateProperty.all(EdgeInsets.zero))
                                                       : Theme.of(context).textButtonTheme.style != null
-                                                          ? Theme.of(context).textButtonTheme.style!.copyWith(
-                                                              padding: MaterialStateProperty.all(EdgeInsets.zero))
-                                                          : TextButton.styleFrom().copyWith(
-                                                              padding: MaterialStateProperty.all(EdgeInsets.zero)),
+                                                          ? Theme.of(context)
+                                                              .textButtonTheme
+                                                              .style!
+                                                              .copyWith(padding: MaterialStateProperty.all(EdgeInsets.zero))
+                                                          : TextButton.styleFrom().copyWith(padding: MaterialStateProperty.all(EdgeInsets.zero)),
                                                   child: Container(
                                                     padding: const EdgeInsets.fromLTRB(16, 5, 16, 5),
                                                     height: 36,
@@ -911,24 +882,16 @@ class _DataGridState extends State<DataGrid> {
                                                       children: [
                                                         Icon(
                                                           Icons.search,
-                                                          color: widget.primaryColor ??
-                                                              Theme.of(context).colorScheme.primary,
+                                                          color: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
                                                           size: 24,
                                                         ),
                                                         Container(
-                                                          padding: EdgeInsets.fromLTRB(
-                                                              MediaQuery.of(context).size.width >= _mobileWidth
-                                                                  ? 10
-                                                                  : 0,
-                                                              0,
-                                                              MediaQuery.of(context).size.width >= _mobileWidth ? 6 : 0,
-                                                              0),
+                                                          padding: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width >= _mobileWidth ? 10 : 0, 0,
+                                                              MediaQuery.of(context).size.width >= _mobileWidth ? 6 : 0, 0),
                                                           child: MediaQuery.of(context).size.width >= _mobileWidth
                                                               ? const Text(
                                                                   "SEARCH",
-                                                                  style: TextStyle(
-                                                                      color: Color.fromRGBO(105, 105, 105, 1),
-                                                                      fontSize: 14),
+                                                                  style: TextStyle(color: Color.fromRGBO(105, 105, 105, 1), fontSize: 14),
                                                                 )
                                                               : Container(),
                                                         ),
@@ -961,16 +924,13 @@ class _DataGridState extends State<DataGrid> {
                           scrollDirection: Axis.horizontal,
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MediaQuery.of(context).size.width > _mobileWidth
-                                ? MainAxisAlignment.end
-                                : MainAxisAlignment.center,
+                            mainAxisAlignment: MediaQuery.of(context).size.width > _mobileWidth ? MainAxisAlignment.end : MainAxisAlignment.center,
                             children: [
                               widget.fixedPageLimit == null && MediaQuery.of(context).size.width > _mobileWidth
                                   ? Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        const Text("Rows per page:",
-                                            style: TextStyle(color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12)),
+                                        const Text("Rows per page:", style: TextStyle(color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12)),
                                         Container(
                                           width: 50,
                                           margin: const EdgeInsets.only(left: 10, right: 16),
@@ -982,24 +942,16 @@ class _DataGridState extends State<DataGrid> {
                                               items: const [
                                                 DropdownMenuItem<num>(
                                                     value: 15,
-                                                    child: Text("15",
-                                                        style: TextStyle(
-                                                            color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12))),
+                                                    child: Text("15", style: TextStyle(color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12))),
                                                 DropdownMenuItem<num>(
                                                     value: 30,
-                                                    child: Text("30",
-                                                        style: TextStyle(
-                                                            color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12))),
+                                                    child: Text("30", style: TextStyle(color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12))),
                                                 DropdownMenuItem<num>(
                                                     value: 60,
-                                                    child: Text("60",
-                                                        style: TextStyle(
-                                                            color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12))),
+                                                    child: Text("60", style: TextStyle(color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12))),
                                                 DropdownMenuItem<num>(
                                                     value: 100,
-                                                    child: Text("100",
-                                                        style: TextStyle(
-                                                            color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12))),
+                                                    child: Text("100", style: TextStyle(color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12))),
                                               ],
                                               value: widget.source.pageSize,
                                               onChanged: (limit) {
