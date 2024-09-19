@@ -763,38 +763,19 @@ class _DataGridState extends State<DataGrid> {
                           children: [
                             Container(
                               padding: const EdgeInsets.only(right: 10),
-                              child: RichText(
-                                text: TextSpan(
-                                  children: [
-                                    TextSpan(
-                                      text: widget.title ?? "",
+                              child: widget.title is String
+                                  ? Text(
+                                      widget.title,
                                       style: const TextStyle(
                                         color: Color.fromRGBO(54, 54, 54, 1),
                                         fontSize: 16,
                                         fontWeight: FontWeight.w700,
                                       ),
-                                    ),
-                                    const TextSpan(text: "  "),
-                                    MediaQuery.of(context).size.width >=
-                                            _mobileWidth
-                                        ? TextSpan(
-                                            text: widget.subTitle ?? "",
-                                            style: const TextStyle(
-                                              color: Color.fromRGBO(
-                                                  105, 105, 105, 1),
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          )
-                                        : const TextSpan(text: ""),
-                                  ],
-                                  style: const TextStyle(
-                                    fontFamily: "Montserrat",
-                                  ),
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                                    )
+                                  : widget.title is Widget
+                                      ? widget
+                                          .title // Directly use the widget if it's a Widget
+                                      : Container(),
                             ),
                             Expanded(
                               child: SingleChildScrollView(
