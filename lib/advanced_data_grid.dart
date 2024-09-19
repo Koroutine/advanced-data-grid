@@ -33,7 +33,7 @@ class DataGridColumn {
     required this.column,
     required this.builder,
     required this.title,
-    this.showTooltip = false,
+    this.showTooltip = true,
     this.tooltipMessage,
     this.filter,
     this.filterDropDownOptions,
