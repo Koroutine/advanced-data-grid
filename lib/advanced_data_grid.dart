@@ -33,7 +33,6 @@ class DataGridColumn {
     required this.column,
     required this.builder,
     required this.title,
-    this.showTooltip = true,
     this.tooltipMessage,
     this.filter,
     this.filterDropDownOptions,
@@ -69,8 +68,6 @@ class DataGridColumn {
 
   /// Column Title to be displayed in the Grid.
   final String title;
-
-  final bool showTooltip;
 
   final String? tooltipMessage;
 
@@ -476,16 +473,22 @@ class _DataGridState extends State<DataGrid> {
         ],
       );
 
-      if (entry.value.showTooltip) {
-        // Custom tooltip message based on title
-        String tooltipMessage = entry.value.title == "Local SMS"
-            ? "Total SMS messages included"
-            : entry.value.tooltipMessage ?? entry.value.title;
+      final tooltipMessages = {
+        'Data': 'Total amount of data included',
+        'Local Calls': 'Total minutes of calls included',
+        'Local SMS': 'Total SMS messages included',
+        'Incl. Number': 'Whether the bundle includes a local phone number',
+      };
 
+      String? tooltipMessage = tooltipMessages[entry.value.title];
+
+      if (tooltipMessage != null) {
         titleContent = Tooltip(
           message: tooltipMessage,
           child: titleContent,
         );
+      } else {
+        titleContent = titleContent;
       }
 
       return DataColumn2(
