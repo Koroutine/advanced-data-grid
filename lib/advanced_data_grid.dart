@@ -33,6 +33,8 @@ class DataGridColumn {
     required this.column,
     required this.builder,
     required this.title,
+    this.showTooltip = false,
+    this.tooltipMessage,
     this.filter,
     this.filterDropDownOptions,
     this.noSorting,
@@ -66,7 +68,11 @@ class DataGridColumn {
   final DataGridColumnBuilder builder;
 
   /// Column Title to be displayed in the Grid.
-  final dynamic title;
+  final String title;
+
+  final bool showTooltip;
+
+  final String? tooltipMessage;
 
   /// Unit name displayed when filtering the column, for example: Filter Items by 2 "items".
   final String? unitName;
@@ -141,7 +147,7 @@ class DataGrid extends StatefulWidget {
   final List<DataGridColumn> builders;
 
   /// Title for the DataGrid, displayed above the Grid.
-  final dynamic? title;
+  final String? title;
 
   /// Sub Title for the DataGrid, displayed beside the Title.
   final String? subTitle;
@@ -234,23 +240,23 @@ List<DataCell> _getSearchCells(
     Map<String, dynamic> data,
     bool iconColumn,
     String fieldsWithSearchresField) {
-  int searchColumnBuildersLength = searchColumnBuilders.length;
+  int searchColumnBuilderslength = searchColumnBuilders.length;
   List<DataGridColumn> searchColumns = [];
   searchColumns.addAll(searchColumnBuilders);
-  int missingColumns = builders.length - searchColumnBuildersLength;
+  int missingColumns = builders.length - searchColumnBuilderslength;
+  bool cellInSearch = false;
 
-  // Adding filler columns to align search cells with data cells
   for (var i = 0; i < missingColumns; i++) {
     searchColumns.add(
+      //Filler columns required to keep the search cells aligned with the data cells
       DataGridColumn(
-        column: "fillerColumn",
-        builder: ((data, value, index) => const Text("")),
-        title: "",
-      ),
+          column: "fillerColumn",
+          builder: ((data, value, index) => const Text("")),
+          title: ""),
     );
   }
-
-  List<DataCell> dataCells = searchColumns.asMap().entries.map((entry) {
+  List<Object> toRemove = [];
+  var dataCells = searchColumns.asMap().entries.map((entry) {
     dynamic cellData;
 
     if (entry.value.isEdge ?? false) {
@@ -259,25 +265,6 @@ List<DataCell> _getSearchCells(
       cellData = data[entry.value.column];
     }
 
-    // Handle title based on its type
-    Widget titleWidget;
-    if (entry.value.title != null) {
-      if (entry.value.title is String) {
-        titleWidget = Text(
-          entry.value.title as String,
-          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
-        );
-      } else if (entry.value.title is Widget) {
-        titleWidget = entry.value.title as Widget;
-      } else {
-        titleWidget =
-            Container(); // Render nothing if `title` is neither a String nor a Widget
-      }
-    } else {
-      titleWidget = Container(); // Render nothing if `title` is null
-    }
-
-    // Render DataCell
     var dataCell = DataCell(
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -287,7 +274,13 @@ List<DataCell> _getSearchCells(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              titleWidget,
+              entry.value.title != ""
+                  ? Text(
+                      entry.value.title,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w600, fontSize: 12),
+                    )
+                  : Container(),
               entry.value.builder(data, cellData, entry.key),
             ],
           ),
@@ -295,9 +288,39 @@ List<DataCell> _getSearchCells(
       ),
     );
 
+    if (cellData == "" &&
+        entry.value.column != "fillerColumn" &&
+        entry.value.column != "iconColumn") {
+      toRemove.add(dataCell);
+    } else if (data[fieldsWithSearchresField] != null) {
+      for (var i = 0; i < data[fieldsWithSearchresField].length; i++) {
+        var fieldInSearch = Map.from(data[fieldsWithSearchresField][i]);
+        if (fieldInSearch['field'] == entry.value.column) {
+          cellInSearch = true;
+        }
+      }
+      if (!cellInSearch &&
+          entry.value.column != "fillerColumn" &&
+          entry.value.column != "iconColumn") {
+        toRemove.add(dataCell);
+      }
+    }
+
     return dataCell;
   }).toList();
 
+  if (iconColumn) {
+    searchColumnBuilderslength--;
+  }
+
+  if (toRemove.length == searchColumnBuilderslength) {
+    return [];
+  } else {
+    for (var i = 0; i < toRemove.length; i++) {
+      dataCells.remove(toRemove[i]);
+      dataCells.add(DataCell(Container()));
+    }
+  }
   return dataCells;
 }
 
@@ -452,6 +475,18 @@ class _DataGridState extends State<DataGrid> {
               : Container(),
         ],
       );
+
+      if (entry.value.showTooltip) {
+        // Custom tooltip message based on title
+        String tooltipMessage = entry.value.title == "Local SMS"
+            ? "Total SMS messages included"
+            : entry.value.tooltipMessage ?? entry.value.title;
+
+        titleContent = Tooltip(
+          message: tooltipMessage,
+          child: titleContent,
+        );
+      }
 
       return DataColumn2(
         size: entry.value.columnSize,
@@ -763,19 +798,38 @@ class _DataGridState extends State<DataGrid> {
                           children: [
                             Container(
                               padding: const EdgeInsets.only(right: 10),
-                              child: widget.title is String
-                                  ? Text(
-                                      widget.title,
+                              child: RichText(
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: widget.title ?? "",
                                       style: const TextStyle(
                                         color: Color.fromRGBO(54, 54, 54, 1),
                                         fontSize: 16,
                                         fontWeight: FontWeight.w700,
                                       ),
-                                    )
-                                  : widget.title is Widget
-                                      ? widget
-                                          .title // Directly use the widget if it's a Widget
-                                      : Container(),
+                                    ),
+                                    const TextSpan(text: "  "),
+                                    MediaQuery.of(context).size.width >=
+                                            _mobileWidth
+                                        ? TextSpan(
+                                            text: widget.subTitle ?? "",
+                                            style: const TextStyle(
+                                              color: Color.fromRGBO(
+                                                  105, 105, 105, 1),
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          )
+                                        : const TextSpan(text: ""),
+                                  ],
+                                  style: const TextStyle(
+                                    fontFamily: "Montserrat",
+                                  ),
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                             Expanded(
                               child: SingleChildScrollView(
