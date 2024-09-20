@@ -473,14 +473,7 @@ class _DataGridState extends State<DataGrid> {
         ],
       );
 
-      final tooltipMessages = {
-        'Data': 'Total amount of data included',
-        'Local Calls': 'Total minutes of calls included',
-        'Local SMS': 'Total SMS messages included',
-        'Incl. Number': 'Whether the bundle includes a local phone number',
-      };
-
-      String? tooltipMessage = tooltipMessages[entry.value.title];
+      String? tooltipMessage = entry.value.tooltipMessage;
 
       if (tooltipMessage != null) {
         titleContent = Tooltip(
