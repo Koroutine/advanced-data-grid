@@ -231,11 +231,7 @@ class DataGrid extends StatefulWidget {
   State<DataGrid> createState() => _DataGridState();
 }
 
-List<DataCell> _getSearchCells(
-    List<DataGridColumn> searchColumnBuilders,
-    List<DataGridColumn> builders,
-    Map<String, dynamic> data,
-    bool iconColumn,
+List<DataCell> _getSearchCells(List<DataGridColumn> searchColumnBuilders, List<DataGridColumn> builders, Map<String, dynamic> data, bool iconColumn,
     String fieldsWithSearchresField) {
   int searchColumnBuilderslength = searchColumnBuilders.length;
   List<DataGridColumn> searchColumns = [];
@@ -246,10 +242,7 @@ List<DataCell> _getSearchCells(
   for (var i = 0; i < missingColumns; i++) {
     searchColumns.add(
       //Filler columns required to keep the search cells aligned with the data cells
-      DataGridColumn(
-          column: "fillerColumn",
-          builder: ((data, value, index) => const Text("")),
-          title: ""),
+      DataGridColumn(column: "fillerColumn", builder: ((data, value, index) => const Text("")), title: ""),
     );
   }
   List<Object> toRemove = [];
@@ -274,8 +267,7 @@ List<DataCell> _getSearchCells(
               entry.value.title != ""
                   ? Text(
                       entry.value.title,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.w600, fontSize: 12),
+                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
                     )
                   : Container(),
               entry.value.builder(data, cellData, entry.key),
@@ -285,9 +277,7 @@ List<DataCell> _getSearchCells(
       ),
     );
 
-    if (cellData == "" &&
-        entry.value.column != "fillerColumn" &&
-        entry.value.column != "iconColumn") {
+    if (cellData == "" && entry.value.column != "fillerColumn" && entry.value.column != "iconColumn") {
       toRemove.add(dataCell);
     } else if (data[fieldsWithSearchresField] != null) {
       for (var i = 0; i < data[fieldsWithSearchresField].length; i++) {
@@ -296,9 +286,7 @@ List<DataCell> _getSearchCells(
           cellInSearch = true;
         }
       }
-      if (!cellInSearch &&
-          entry.value.column != "fillerColumn" &&
-          entry.value.column != "iconColumn") {
+      if (!cellInSearch && entry.value.column != "fillerColumn" && entry.value.column != "iconColumn") {
         toRemove.add(dataCell);
       }
     }
@@ -322,8 +310,7 @@ List<DataCell> _getSearchCells(
 }
 
 class _DataGridState extends State<DataGrid> {
-  late final GridSearchDebouncer _searchDebouncer =
-      GridSearchDebouncer(milliseconds: widget.searchDebouncerDelay);
+  late final GridSearchDebouncer _searchDebouncer = GridSearchDebouncer(milliseconds: widget.searchDebouncerDelay);
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
   final double _mobileWidth = 1024;
@@ -341,10 +328,8 @@ class _DataGridState extends State<DataGrid> {
 
   List<DataColumn2> get _headers {
     var titleCells = widget.builders.asMap().entries.map((entry) {
-      var sortDirection = widget.source
-          .getSort(entry.value.filterColumnName ?? entry.value.column);
-      var hasFilter = widget.source
-          .hasFilters(entry.value.filterColumnName ?? entry.value.column);
+      var sortDirection = widget.source.getSort(entry.value.filterColumnName ?? entry.value.column);
+      var hasFilter = widget.source.hasFilters(entry.value.filterColumnName ?? entry.value.column);
       _searchInUse = widget.source.searchInUse();
 
       Widget titleContent = Row(
@@ -358,20 +343,14 @@ class _DataGridState extends State<DataGrid> {
           entry.value.filter == null
               ? Container()
               : Container(
-                  padding: EdgeInsets.only(
-                      right: sortDirection == "asc" || sortDirection == "desc"
-                          ? 10
-                          : 0),
+                  padding: EdgeInsets.only(right: sortDirection == "asc" || sortDirection == "desc" ? 10 : 0),
                   child: PopupMenuButton(
                     enableFeedback: false,
                     enabled: !_searchInUse,
                     padding: const EdgeInsets.all(0),
                     child: hasFilter
-                        ? Icon(Icons.filter_alt_off_rounded,
-                            color: widget.primaryColor ??
-                                Theme.of(context).colorScheme.primary)
-                        : const Icon(Icons.filter_alt_rounded,
-                            color: Colors.grey),
+                        ? Icon(Icons.filter_alt_off_rounded, color: widget.primaryColor ?? Theme.of(context).colorScheme.primary)
+                        : const Icon(Icons.filter_alt_rounded, color: Colors.grey),
                     itemBuilder: (context) {
                       return [
                         PopupMenuItem(
@@ -381,36 +360,27 @@ class _DataGridState extends State<DataGrid> {
                                   data: entry.value,
                                   filterType: entry.value.filter!,
                                   source: widget.source,
-                                  primaryColor: widget.primaryColor ??
-                                      Theme.of(context).colorScheme.primary,
+                                  primaryColor: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
                                 )
                               : entry.value.filter == DataFilterType.BOOLEAN
                                   ? FilterBool(
                                       data: entry.value,
                                       filterType: entry.value.filter!,
                                       source: widget.source,
-                                      primaryColor: widget.primaryColor ??
-                                          Theme.of(context).colorScheme.primary,
+                                      primaryColor: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
                                     )
-                                  : entry.value.filter ==
-                                          DataFilterType.COUNTRY_CODE
+                                  : entry.value.filter == DataFilterType.COUNTRY_CODE
                                       ? FilterCountry(
                                           data: entry.value,
                                           filterType: entry.value.filter!,
                                           source: widget.source,
-                                          primaryColor: widget.primaryColor ??
-                                              Theme.of(context)
-                                                  .colorScheme
-                                                  .primary,
+                                          primaryColor: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
                                         )
                                       : FilterText(
                                           data: entry.value,
                                           filterType: entry.value.filter!,
                                           source: widget.source,
-                                          primaryColor: widget.primaryColor ??
-                                              Theme.of(context)
-                                                  .colorScheme
-                                                  .primary,
+                                          primaryColor: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
                                         ),
                         )
                       ];
@@ -425,13 +395,9 @@ class _DataGridState extends State<DataGrid> {
                       Align(
                         alignment: Alignment.centerLeft,
                         child: sortDirection == "asc"
-                            ? Icon(Icons.arrow_upward_rounded,
-                                color: widget.primaryColor ??
-                                    Theme.of(context).colorScheme.primary)
+                            ? Icon(Icons.arrow_upward_rounded, color: widget.primaryColor ?? Theme.of(context).colorScheme.primary)
                             : sortDirection == "desc"
-                                ? Icon(Icons.arrow_downward_rounded,
-                                    color: widget.primaryColor ??
-                                        Theme.of(context).colorScheme.primary)
+                                ? Icon(Icons.arrow_downward_rounded, color: widget.primaryColor ?? Theme.of(context).colorScheme.primary)
                                 : Container(),
                       ),
                       widget.source.columnSorts.length > 1
@@ -442,18 +408,12 @@ class _DataGridState extends State<DataGrid> {
                                 width: 12,
                                 margin: const EdgeInsets.only(bottom: 24),
                                 decoration: BoxDecoration(
-                                  color: widget.primaryColor ??
-                                      Theme.of(context).colorScheme.primary,
+                                  color: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Center(
                                   child: Text(
-                                    (widget.source.columnSorts.keys
-                                                .toList()
-                                                .indexOf(entry.value
-                                                        .filterColumnName ??
-                                                    entry.value.column) +
-                                            1)
+                                    (widget.source.columnSorts.keys.toList().indexOf(entry.value.filterColumnName ?? entry.value.column) + 1)
                                         .toString(),
                                     style: const TextStyle(
                                       color: Colors.white,
@@ -502,22 +462,14 @@ class _DataGridState extends State<DataGrid> {
                       ),
                       onPressed: () {
                         if (sortDirection == "asc") {
-                          widget.source.removeSort(
-                              entry.value.filterColumnName ??
-                                  entry.value.column);
+                          widget.source.removeSort(entry.value.filterColumnName ?? entry.value.column);
                           return;
                         }
 
                         if (widget.enableMultiSort) {
-                          widget.source.addSort(
-                              entry.value.filterColumnName ??
-                                  entry.value.column,
-                              sortDirection == "desc" ? "asc" : "desc");
+                          widget.source.addSort(entry.value.filterColumnName ?? entry.value.column, sortDirection == "desc" ? "asc" : "desc");
                         } else {
-                          widget.source.replaceAllSorts(
-                              entry.value.filterColumnName ??
-                                  entry.value.column,
-                              sortDirection == "desc" ? "asc" : "desc");
+                          widget.source.replaceAllSorts(entry.value.filterColumnName ?? entry.value.column, sortDirection == "desc" ? "asc" : "desc");
                         }
                       },
                       child: titleContent,
@@ -543,35 +495,23 @@ class _DataGridState extends State<DataGrid> {
           _searchDebouncer.run(() {
             if (_searchController.text != "") {
               widget.source.setFilters(
-                widget.mainSearchColumn!.filterColumnName ??
-                    widget.mainSearchColumn!.column,
+                widget.mainSearchColumn!.filterColumnName ?? widget.mainSearchColumn!.column,
                 [DataFilter(operator: null, value: _searchController.text)],
               );
             } else {
-              widget.source.removefilters(
-                  widget.mainSearchColumn!.filterColumnName ??
-                      widget.mainSearchColumn!.column);
+              widget.source.removefilters(widget.mainSearchColumn!.filterColumnName ?? widget.mainSearchColumn!.column);
             }
           });
         },
         decoration: InputDecoration(
           contentPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
           isDense: true,
-          border: const OutlineInputBorder(
-              borderSide: BorderSide(
-                  color: Color.fromRGBO(141, 141, 141, 1), width: 0.5)),
-          enabledBorder: const OutlineInputBorder(
-              borderSide: BorderSide(
-                  color: Color.fromRGBO(141, 141, 141, 1), width: 0.5)),
-          focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                  color: widget.primaryColor ??
-                      Theme.of(context).colorScheme.primary)),
+          border: const OutlineInputBorder(borderSide: BorderSide(color: Color.fromRGBO(141, 141, 141, 1), width: 0.5)),
+          enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: Color.fromRGBO(141, 141, 141, 1), width: 0.5)),
+          focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: widget.primaryColor ?? Theme.of(context).colorScheme.primary)),
           errorMaxLines: 3,
-          errorBorder: const OutlineInputBorder(
-              borderSide: BorderSide(color: Color.fromRGBO(226, 106, 103, 1))),
-          focusColor:
-              widget.primaryColor ?? Theme.of(context).colorScheme.primary,
+          errorBorder: const OutlineInputBorder(borderSide: BorderSide(color: Color.fromRGBO(226, 106, 103, 1))),
+          focusColor: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
           fillColor: const Color.fromRGBO(249, 249, 249, 1),
           filled: true,
           hintText: "Search ${widget.mainSearchColumn!.title}...",
@@ -582,11 +522,7 @@ class _DataGridState extends State<DataGrid> {
             size: 20,
           ),
           constraints: const BoxConstraints(maxHeight: 240),
-          disabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                  color:
-                      const Color.fromRGBO(141, 141, 141, 1).withOpacity(0.5),
-                  width: 0.5)),
+          disabledBorder: OutlineInputBorder(borderSide: BorderSide(color: const Color.fromRGBO(141, 141, 141, 1).withOpacity(0.5), width: 0.5)),
         ),
         textInputAction: TextInputAction.none,
       ),
@@ -602,12 +538,8 @@ class _DataGridState extends State<DataGrid> {
         child: Text(
           "$p",
           style: TextStyle(
-            fontWeight: p == widget.source.currentPage
-                ? FontWeight.bold
-                : FontWeight.normal,
-            color: p == widget.source.currentPage
-                ? widget.primaryColor ?? Theme.of(context).colorScheme.primary
-                : Colors.grey,
+            fontWeight: p == widget.source.currentPage ? FontWeight.bold : FontWeight.normal,
+            color: p == widget.source.currentPage ? widget.primaryColor ?? Theme.of(context).colorScheme.primary : Colors.grey,
           ),
         ),
       );
@@ -665,8 +597,7 @@ class _DataGridState extends State<DataGrid> {
             for (var data in value.items) {
               rows.add(
                 DataRow2(
-                    onSelectChanged: widget.onSelectionChange != null &&
-                            widget.identifierColumnName != null
+                    onSelectChanged: widget.onSelectionChange != null && widget.identifierColumnName != null
                         ? (bool? sel) {
                             bool isSelected = sel == true;
                             widget.onSelectionChange!(data, isSelected);
@@ -674,8 +605,7 @@ class _DataGridState extends State<DataGrid> {
                         : null,
                     selected: widget.selectedRows != null &&
                             widget.identifierColumnName != null &&
-                            widget.selectedRows!
-                                .contains(data[widget.identifierColumnName])
+                            widget.selectedRows!.contains(data[widget.identifierColumnName])
                         ? true
                         : false,
                     onTap: widget.onRowTap != null
@@ -694,20 +624,12 @@ class _DataGridState extends State<DataGrid> {
 
                       return DataCell(Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Align(
-                              alignment: entry.value.alignment,
-                              child: entry.value
-                                  .builder(data, cellData, entry.key))));
+                          child: Align(alignment: entry.value.alignment, child: entry.value.builder(data, cellData, entry.key))));
                     }).toList()),
               );
 
               if (_searchInUse &&
-                  _getSearchCells(
-                          widget.searchColumnBuilders ?? [],
-                          widget.builders,
-                          data,
-                          widget.searchColumnIcon,
-                          widget.fieldsWithSearchresField)
+                  _getSearchCells(widget.searchColumnBuilders ?? [], widget.builders, data, widget.searchColumnIcon, widget.fieldsWithSearchresField)
                       .isNotEmpty &&
                   widget.enableSearchColumns) {
                 rows.add(
@@ -750,11 +672,7 @@ class _DataGridState extends State<DataGrid> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const CircularProgressIndicator(),
-                        const SizedBox(height: 10),
-                        Text("Loading ${widget.title ?? ""}...")
-                      ],
+                      children: [const CircularProgressIndicator(), const SizedBox(height: 10), Text("Loading ${widget.title ?? ""}...")],
                     ),
                   )
                 : Center(
@@ -778,16 +696,12 @@ class _DataGridState extends State<DataGrid> {
                 ? BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(10),
-                    boxShadow: const [
-                      BoxShadow(blurRadius: 5, color: Colors.grey)
-                    ],
+                    boxShadow: const [BoxShadow(blurRadius: 5, color: Colors.grey)],
                   )
                 : null,
             child: Column(
               children: [
-                widget.title != null ||
-                        widget.mainSearchColumn != null ||
-                        widget.actions != null
+                widget.title != null || widget.mainSearchColumn != null || widget.actions != null
                     ? Container(
                         padding: const EdgeInsets.fromLTRB(16, 16, 16, 5),
                         child: Row(
@@ -806,13 +720,11 @@ class _DataGridState extends State<DataGrid> {
                                       ),
                                     ),
                                     const TextSpan(text: "  "),
-                                    MediaQuery.of(context).size.width >=
-                                            _mobileWidth
+                                    MediaQuery.of(context).size.width >= _mobileWidth
                                         ? TextSpan(
                                             text: widget.subTitle ?? "",
                                             style: const TextStyle(
-                                              color: Color.fromRGBO(
-                                                  105, 105, 105, 1),
+                                              color: Color.fromRGBO(105, 105, 105, 1),
                                               fontSize: 14,
                                               fontWeight: FontWeight.w500,
                                             ),
@@ -834,121 +746,59 @@ class _DataGridState extends State<DataGrid> {
                                 child: Row(children: [
                                   widget.actions != null
                                       ? Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 5),
+                                          padding: const EdgeInsets.symmetric(horizontal: 5),
                                           child: Row(
                                             children: widget.actions!,
                                           ),
                                         )
                                       : Container(),
-                                  widget.exportTypes.isNotEmpty &&
-                                          !widget.source.isLoading &&
-                                          widget.source.items.isNotEmpty
+                                  widget.exportTypes.isNotEmpty && !widget.source.isLoading && widget.source.items.isNotEmpty
                                       ? Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 5),
+                                          padding: const EdgeInsets.symmetric(horizontal: 5),
                                           child: TextButton(
                                             onPressed: () {
                                               showDialog(
                                                   context: context,
-                                                  builder:
-                                                      (BuildContext context) {
+                                                  builder: (BuildContext context) {
                                                     return ExportDataGridModal(
-                                                      title: widget.title ??
-                                                          "Data",
-                                                      columns: widget.builders
-                                                          .where((column) =>
-                                                              column
-                                                                  .includeInExport ==
-                                                              true)
-                                                          .toList(),
+                                                      title: widget.title ?? "Data",
+                                                      columns: widget.builders.where((column) => column.includeInExport == true).toList(),
                                                       source: widget.source,
-                                                      exportTypes:
-                                                          widget.exportTypes,
-                                                      exportLimit:
-                                                          widget.exportLimit,
-                                                      overrideButtonStyle: widget
-                                                          .overrideElevatedButtonStyle,
-                                                      primaryColor:
-                                                          widget.primaryColor ??
-                                                              Theme.of(context)
-                                                                  .colorScheme
-                                                                  .primary,
+                                                      exportTypes: widget.exportTypes,
+                                                      exportLimit: widget.exportLimit,
+                                                      overrideButtonStyle: widget.overrideElevatedButtonStyle,
+                                                      primaryColor: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
                                                     );
                                                   });
                                             },
-                                            style: widget.overrideTextButtonStyle !=
-                                                    null
-                                                ? widget.overrideTextButtonStyle!
-                                                    .copyWith(
-                                                        padding: MaterialStateProperty.all(
-                                                            EdgeInsets.zero))
-                                                : Theme.of(context)
-                                                            .textButtonTheme
-                                                            .style !=
-                                                        null
+                                            style: widget.overrideTextButtonStyle != null
+                                                ? widget.overrideTextButtonStyle!.copyWith(padding: MaterialStateProperty.all(EdgeInsets.zero))
+                                                : Theme.of(context).textButtonTheme.style != null
                                                     ? Theme.of(context)
                                                         .textButtonTheme
                                                         .style!
-                                                        .copyWith(
-                                                            padding:
-                                                                MaterialStateProperty.all(
-                                                                    EdgeInsets
-                                                                        .zero))
-                                                    : TextButton.styleFrom().copyWith(
-                                                        padding:
-                                                            MaterialStateProperty.all(EdgeInsets.zero)),
+                                                        .copyWith(padding: MaterialStateProperty.all(EdgeInsets.zero))
+                                                    : TextButton.styleFrom().copyWith(padding: MaterialStateProperty.all(EdgeInsets.zero)),
                                             child: Container(
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      16, 5, 16, 5),
+                                              padding: const EdgeInsets.fromLTRB(16, 5, 16, 5),
                                               height: 36,
                                               child: Row(
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   Icon(
                                                     Icons.download,
-                                                    color:
-                                                        widget.primaryColor ??
-                                                            Theme.of(context)
-                                                                .colorScheme
-                                                                .primary,
+                                                    color: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
                                                     size: 24,
                                                   ),
                                                   Container(
-                                                    padding: EdgeInsets.fromLTRB(
-                                                        MediaQuery.of(context)
-                                                                    .size
-                                                                    .width >=
-                                                                _mobileWidth
-                                                            ? 10
-                                                            : 0,
-                                                        0,
-                                                        MediaQuery.of(context)
-                                                                    .size
-                                                                    .width >=
-                                                                _mobileWidth
-                                                            ? 6
-                                                            : 0,
-                                                        0),
-                                                    child:
-                                                        MediaQuery.of(context)
-                                                                    .size
-                                                                    .width >=
-                                                                _mobileWidth
-                                                            ? const Text(
-                                                                "EXPORT",
-                                                                style: TextStyle(
-                                                                    color: Color
-                                                                        .fromRGBO(
-                                                                            105,
-                                                                            105,
-                                                                            105,
-                                                                            1),
-                                                                    fontSize:
-                                                                        14),
-                                                              )
-                                                            : Container(),
+                                                    padding: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width >= _mobileWidth ? 10 : 0, 0,
+                                                        MediaQuery.of(context).size.width >= _mobileWidth ? 6 : 0, 0),
+                                                    child: MediaQuery.of(context).size.width >= _mobileWidth
+                                                        ? const Text(
+                                                            "EXPORT",
+                                                            style: TextStyle(color: Color.fromRGBO(105, 105, 105, 1), fontSize: 14),
+                                                          )
+                                                        : Container(),
                                                   ),
                                                 ],
                                               ),
@@ -959,107 +809,61 @@ class _DataGridState extends State<DataGrid> {
                                   Row(
                                     children: [
                                       widget.mainSearchColumn != null
-                                          ? MediaQuery.of(context).size.width >
-                                                  _mobileWidth
+                                          ? MediaQuery.of(context).size.width > _mobileWidth
                                               ? _getSearchField()
                                               : TextButton(
                                                   onPressed: () {
                                                     showDialog(
                                                       context: context,
-                                                      builder: (BuildContext
-                                                          context) {
+                                                      builder: (BuildContext context) {
                                                         return Dialog(
-                                                          shape: RoundedRectangleBorder(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          10)),
+                                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                                           child: ConstrainedBox(
                                                             constraints: BoxConstraints(
-                                                                maxWidth: MediaQuery.of(context)
-                                                                            .size
-                                                                            .width >
-                                                                        364
+                                                                maxWidth: MediaQuery.of(context).size.width > 364
                                                                     ? 332
-                                                                    : MediaQuery.of(context)
-                                                                            .size
-                                                                            .width -
-                                                                        32),
+                                                                    : MediaQuery.of(context).size.width - 32),
                                                             child: Container(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .fromLTRB(
-                                                                      16,
-                                                                      8,
-                                                                      8,
-                                                                      8),
+                                                              padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
                                                               child: Column(
-                                                                mainAxisSize:
-                                                                    MainAxisSize
-                                                                        .min,
+                                                                mainAxisSize: MainAxisSize.min,
                                                                 children: [
                                                                   Row(
                                                                     children: [
                                                                       const Expanded(
-                                                                        child:
-                                                                            Text(
+                                                                        child: Text(
                                                                           "Search",
-                                                                          style:
-                                                                              TextStyle(
-                                                                            fontWeight:
-                                                                                FontWeight.w700,
-                                                                            color: Color.fromRGBO(
-                                                                                54,
-                                                                                54,
-                                                                                54,
-                                                                                1),
-                                                                            fontSize:
-                                                                                16,
+                                                                          style: TextStyle(
+                                                                            fontWeight: FontWeight.w700,
+                                                                            color: Color.fromRGBO(54, 54, 54, 1),
+                                                                            fontSize: 16,
                                                                           ),
                                                                         ),
                                                                       ),
                                                                       IconButton(
-                                                                        onPressed:
-                                                                            () {
-                                                                          Navigator.of(context)
-                                                                              .pop();
+                                                                        onPressed: () {
+                                                                          Navigator.of(context).pop();
                                                                         },
-                                                                        icon: const Icon(
-                                                                            Icons.close_rounded),
-                                                                        color: const Color
-                                                                            .fromRGBO(
-                                                                            54,
-                                                                            54,
-                                                                            54,
-                                                                            1),
-                                                                        splashRadius:
-                                                                            30,
-                                                                        padding: const EdgeInsets
-                                                                            .all(
-                                                                            5),
+                                                                        icon: const Icon(Icons.close_rounded),
+                                                                        color: const Color.fromRGBO(54, 54, 54, 1),
+                                                                        splashRadius: 30,
+                                                                        padding: const EdgeInsets.all(5),
                                                                       ),
                                                                     ],
                                                                   ),
                                                                   _getSearchField(),
-                                                                  const SizedBox(
-                                                                      height:
-                                                                          10),
+                                                                  const SizedBox(height: 10),
                                                                   Row(
-                                                                    mainAxisAlignment:
-                                                                        MainAxisAlignment
-                                                                            .center,
+                                                                    mainAxisAlignment: MainAxisAlignment.center,
                                                                     children: [
                                                                       ElevatedButton(
-                                                                        onPressed:
-                                                                            () {
-                                                                          Navigator.of(context)
-                                                                              .pop();
+                                                                        onPressed: () {
+                                                                          Navigator.of(context).pop();
                                                                         },
                                                                         style: widget.overrideElevatedButtonStyle ??
                                                                             (Theme.of(context).elevatedButtonTheme.style ??
                                                                                 ElevatedButton.styleFrom()),
-                                                                        child: const Text(
-                                                                            "SEARCH"),
+                                                                        child: const Text("SEARCH"),
                                                                       ),
                                                                     ],
                                                                   ),
@@ -1071,73 +875,32 @@ class _DataGridState extends State<DataGrid> {
                                                       },
                                                     );
                                                   },
-                                                  style: widget.overrideTextButtonStyle !=
-                                                          null
-                                                      ? widget.overrideTextButtonStyle!.copyWith(
-                                                          padding: MaterialStateProperty.all(
-                                                              EdgeInsets.zero))
-                                                      : Theme.of(context)
-                                                                  .textButtonTheme
-                                                                  .style !=
-                                                              null
+                                                  style: widget.overrideTextButtonStyle != null
+                                                      ? widget.overrideTextButtonStyle!.copyWith(padding: MaterialStateProperty.all(EdgeInsets.zero))
+                                                      : Theme.of(context).textButtonTheme.style != null
                                                           ? Theme.of(context)
                                                               .textButtonTheme
                                                               .style!
-                                                              .copyWith(
-                                                                  padding: MaterialStateProperty.all(
-                                                                      EdgeInsets
-                                                                          .zero))
-                                                          : TextButton.styleFrom().copyWith(
-                                                              padding: MaterialStateProperty.all(
-                                                                  EdgeInsets.zero)),
+                                                              .copyWith(padding: MaterialStateProperty.all(EdgeInsets.zero))
+                                                          : TextButton.styleFrom().copyWith(padding: MaterialStateProperty.all(EdgeInsets.zero)),
                                                   child: Container(
-                                                    padding: const EdgeInsets
-                                                        .fromLTRB(16, 5, 16, 5),
+                                                    padding: const EdgeInsets.fromLTRB(16, 5, 16, 5),
                                                     height: 36,
                                                     child: Row(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
+                                                      mainAxisSize: MainAxisSize.min,
                                                       children: [
                                                         Icon(
                                                           Icons.search,
-                                                          color: widget
-                                                                  .primaryColor ??
-                                                              Theme.of(context)
-                                                                  .colorScheme
-                                                                  .primary,
+                                                          color: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
                                                           size: 24,
                                                         ),
                                                         Container(
-                                                          padding: EdgeInsets.fromLTRB(
-                                                              MediaQuery.of(context)
-                                                                          .size
-                                                                          .width >=
-                                                                      _mobileWidth
-                                                                  ? 10
-                                                                  : 0,
-                                                              0,
-                                                              MediaQuery.of(context)
-                                                                          .size
-                                                                          .width >=
-                                                                      _mobileWidth
-                                                                  ? 6
-                                                                  : 0,
-                                                              0),
-                                                          child: MediaQuery.of(
-                                                                          context)
-                                                                      .size
-                                                                      .width >=
-                                                                  _mobileWidth
+                                                          padding: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width >= _mobileWidth ? 10 : 0, 0,
+                                                              MediaQuery.of(context).size.width >= _mobileWidth ? 6 : 0, 0),
+                                                          child: MediaQuery.of(context).size.width >= _mobileWidth
                                                               ? const Text(
                                                                   "SEARCH",
-                                                                  style: TextStyle(
-                                                                      color: Color.fromRGBO(
-                                                                          105,
-                                                                          105,
-                                                                          105,
-                                                                          1),
-                                                                      fontSize:
-                                                                          14),
+                                                                  style: TextStyle(color: Color.fromRGBO(105, 105, 105, 1), fontSize: 14),
                                                                 )
                                                               : Container(),
                                                         ),
@@ -1156,191 +919,132 @@ class _DataGridState extends State<DataGrid> {
                       )
                     : Container(),
                 Expanded(
-                  child: widget.enableTextSelection
-                      ? SelectionArea(child: table)
-                      : table,
+                  child: widget.enableTextSelection ? SelectionArea(child: table) : table,
                 ),
                 const Divider(
                   height: 2,
                   thickness: 2,
                 ),
-                Container(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 5),
-                  height: 48,
-                  child: !widget.source.isLoading
-                      ? SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment:
-                                MediaQuery.of(context).size.width > _mobileWidth
-                                    ? MainAxisAlignment.end
-                                    : MainAxisAlignment.center,
-                            children: [
-                              widget.fixedPageLimit == null &&
-                                      MediaQuery.of(context).size.width >
-                                          _mobileWidth
-                                  ? Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        const Text("Rows per page:",
-                                            style: TextStyle(
-                                                color: Color.fromRGBO(
-                                                    105, 105, 105, 1),
-                                                fontSize: 12)),
-                                        Container(
-                                          width: 50,
-                                          margin: const EdgeInsets.only(
-                                              left: 10, right: 16),
-                                          child: DropdownButtonHideUnderline(
-                                            child: DropdownButton<num>(
-                                              isDense: true,
-                                              isExpanded: true,
-                                              borderRadius:
-                                                  BorderRadius.circular(6),
-                                              items: const [
-                                                DropdownMenuItem<num>(
-                                                    value: 15,
-                                                    child: Text("15",
-                                                        style: TextStyle(
-                                                            color:
-                                                                Color.fromRGBO(
-                                                                    105,
-                                                                    105,
-                                                                    105,
-                                                                    1),
-                                                            fontSize: 12))),
-                                                DropdownMenuItem<num>(
-                                                    value: 30,
-                                                    child: Text("30",
-                                                        style: TextStyle(
-                                                            color:
-                                                                Color.fromRGBO(
-                                                                    105,
-                                                                    105,
-                                                                    105,
-                                                                    1),
-                                                            fontSize: 12))),
-                                                DropdownMenuItem<num>(
-                                                    value: 60,
-                                                    child: Text("60",
-                                                        style: TextStyle(
-                                                            color:
-                                                                Color.fromRGBO(
-                                                                    105,
-                                                                    105,
-                                                                    105,
-                                                                    1),
-                                                            fontSize: 12))),
-                                                DropdownMenuItem<num>(
-                                                    value: 100,
-                                                    child: Text("100",
-                                                        style: TextStyle(
-                                                            color:
-                                                                Color.fromRGBO(
-                                                                    105,
-                                                                    105,
-                                                                    105,
-                                                                    1),
-                                                            fontSize: 12))),
-                                              ],
-                                              value: widget.source.pageSize,
-                                              onChanged: (limit) {
-                                                widget.source
-                                                    .setPageLimit(limit ?? 15);
-                                              },
-                                            ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MediaQuery.of(context).size.width > _mobileWidth ? MainAxisAlignment.end : MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 5),
+                      height: 48,
+                      child: !widget.source.isLoading
+                          ? SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  widget.fixedPageLimit == null && MediaQuery.of(context).size.width > _mobileWidth
+                                      ? Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Text("Rows per page:", style: TextStyle(color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12)),
+                                            Container(
+                                              width: 50,
+                                              margin: const EdgeInsets.only(left: 10, right: 16),
+                                              child: DropdownButtonHideUnderline(
+                                                child: DropdownButton<num>(
+                                                  isDense: true,
+                                                  isExpanded: true,
+                                                  borderRadius: BorderRadius.circular(6),
+                                                  items: const [
+                                                    DropdownMenuItem<num>(
+                                                        value: 15,
+                                                        child: Text("15", style: TextStyle(color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12))),
+                                                    DropdownMenuItem<num>(
+                                                        value: 30,
+                                                        child: Text("30", style: TextStyle(color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12))),
+                                                    DropdownMenuItem<num>(
+                                                        value: 60,
+                                                        child: Text("60", style: TextStyle(color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12))),
+                                                    DropdownMenuItem<num>(
+                                                        value: 100,
+                                                        child: Text("100", style: TextStyle(color: Color.fromRGBO(105, 105, 105, 1), fontSize: 12))),
+                                                  ],
+                                                  value: widget.source.pageSize,
+                                                  onChanged: (limit) {
+                                                    widget.source.setPageLimit(limit ?? 15);
+                                                  },
+                                                ),
+                                              ),
+                                            )
+                                          ],
+                                        )
+                                      : Container(),
+                                  !widget.hideRowCount
+                                      ? Text(
+                                          widget.hidePageSelection
+                                              ? "${widget.source.totalCount} rows"
+                                              : "${MediaQuery.of(context).size.width > _mobileWidth ? "Showing " : ""}${(widget.source.currentPage * widget.source.pageSize) - (widget.source.pageSize - 1)}-${((widget.source.currentPage * widget.source.pageSize) - widget.source.pageSize) + widget.source.items.length} of ${widget.source.totalCount}",
+                                          style: const TextStyle(
+                                            color: Color.fromRGBO(105, 105, 105, 1),
+                                            fontSize: 12,
                                           ),
                                         )
-                                      ],
-                                    )
-                                  : Container(),
-                              !widget.hideRowCount
-                                  ? Text(
-                                      widget.hidePageSelection
-                                          ? "${widget.source.totalCount} rows"
-                                          : "${MediaQuery.of(context).size.width > _mobileWidth ? "Showing " : ""}${(widget.source.currentPage * widget.source.pageSize) - (widget.source.pageSize - 1)}-${((widget.source.currentPage * widget.source.pageSize) - widget.source.pageSize) + widget.source.items.length} of ${widget.source.totalCount}",
-                                      style: const TextStyle(
-                                        color: Color.fromRGBO(105, 105, 105, 1),
-                                        fontSize: 12,
-                                      ),
-                                    )
-                                  : Container(),
-                              SizedBox(width: !widget.hideRowCount ? 16 : 0),
-                              !widget.hidePageSelection
-                                  ? IconButton(
-                                      onPressed: (widget.source.isZeroIndexed &&
-                                                  widget.source.currentPage >
-                                                      0) ||
-                                              (!widget.source.isZeroIndexed &&
-                                                  widget.source.currentPage > 1)
-                                          ? () {
-                                              widget.source.loadPage(
-                                                  widget.source.isZeroIndexed
-                                                      ? 0
-                                                      : 1);
-                                            }
-                                          : null,
-                                      icon: const Icon(
-                                        Icons.skip_previous_rounded,
-                                      ),
-                                      color: widget.primaryColor ??
-                                          Theme.of(context).colorScheme.primary,
-                                    )
-                                  : Container(),
-                              IconButton(
-                                onPressed: (widget.source.isZeroIndexed &&
-                                            widget.source.currentPage > 0) ||
-                                        (!widget.source.isZeroIndexed &&
-                                            widget.source.currentPage > 1)
-                                    ? () {
-                                        widget.source.loadPage(
-                                            widget.source.currentPage - 1);
-                                      }
-                                    : null,
-                                icon: const Icon(
-                                  Icons.keyboard_arrow_left_rounded,
-                                ),
-                                color: widget.primaryColor ??
-                                    Theme.of(context).colorScheme.primary,
+                                      : Container(),
+                                  SizedBox(width: !widget.hideRowCount ? 16 : 0),
+                                  !widget.hidePageSelection
+                                      ? IconButton(
+                                          onPressed: (widget.source.isZeroIndexed && widget.source.currentPage > 0) ||
+                                                  (!widget.source.isZeroIndexed && widget.source.currentPage > 1)
+                                              ? () {
+                                                  widget.source.loadPage(widget.source.isZeroIndexed ? 0 : 1);
+                                                }
+                                              : null,
+                                          icon: const Icon(
+                                            Icons.skip_previous_rounded,
+                                          ),
+                                          color: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
+                                        )
+                                      : Container(),
+                                  IconButton(
+                                    onPressed: (widget.source.isZeroIndexed && widget.source.currentPage > 0) ||
+                                            (!widget.source.isZeroIndexed && widget.source.currentPage > 1)
+                                        ? () {
+                                            widget.source.loadPage(widget.source.currentPage - 1);
+                                          }
+                                        : null,
+                                    icon: const Icon(
+                                      Icons.keyboard_arrow_left_rounded,
+                                    ),
+                                    color: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
+                                  ),
+                                  !widget.hidePageSelection ? Row(children: _getPaginationButtons()) : Container(),
+                                  IconButton(
+                                    onPressed: widget.source.currentPage < widget.source.lastPage
+                                        ? () {
+                                            widget.source.loadPage(widget.source.currentPage + 1);
+                                          }
+                                        : null,
+                                    icon: const Icon(
+                                      Icons.keyboard_arrow_right_rounded,
+                                    ),
+                                    color: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
+                                  ),
+                                  !widget.hidePageSelection
+                                      ? IconButton(
+                                          onPressed: widget.source.currentPage < widget.source.lastPage
+                                              ? () {
+                                                  widget.source.loadPage(widget.source.lastPage);
+                                                }
+                                              : null,
+                                          icon: const Icon(
+                                            Icons.skip_next_rounded,
+                                          ),
+                                          color: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
+                                        )
+                                      : Container(),
+                                ],
                               ),
-                              !widget.hidePageSelection
-                                  ? Row(children: _getPaginationButtons())
-                                  : Container(),
-                              IconButton(
-                                onPressed: widget.source.currentPage <
-                                        widget.source.lastPage
-                                    ? () {
-                                        widget.source.loadPage(
-                                            widget.source.currentPage + 1);
-                                      }
-                                    : null,
-                                icon: const Icon(
-                                  Icons.keyboard_arrow_right_rounded,
-                                ),
-                                color: widget.primaryColor ??
-                                    Theme.of(context).colorScheme.primary,
-                              ),
-                              !widget.hidePageSelection
-                                  ? IconButton(
-                                      onPressed: widget.source.currentPage <
-                                              widget.source.lastPage
-                                          ? () {
-                                              widget.source.loadPage(
-                                                  widget.source.lastPage);
-                                            }
-                                          : null,
-                                      icon: const Icon(
-                                        Icons.skip_next_rounded,
-                                      ),
-                                      color: widget.primaryColor ??
-                                          Theme.of(context).colorScheme.primary,
-                                    )
-                                  : Container(),
-                            ],
-                          ),
-                        )
-                      : Container(),
+                            )
+                          : Container(),
+                    ),
+                  ],
                 ),
               ],
             ),
