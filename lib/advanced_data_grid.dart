@@ -11,6 +11,7 @@ import 'export_data.dart';
 import 'filter_text.dart';
 import 'types.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class GridSearchDebouncer {
@@ -457,7 +458,7 @@ class _DataGridState extends State<DataGrid> {
                     )
                   : TextButton(
                       style: TextButton.styleFrom(
-                        foregroundColor: Colors.black,
+                        primary: Colors.black,
                         padding: const EdgeInsets.symmetric(horizontal: 8),
                       ),
                       onPressed: () {
