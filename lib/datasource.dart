@@ -421,7 +421,6 @@ class DataSourceApi extends DataSource {
     Map<String, String> headers = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'JWT-Type': 'auth0',
     };
 
     if (token != null) {
