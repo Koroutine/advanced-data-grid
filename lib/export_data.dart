@@ -377,7 +377,7 @@ class _ExportDataGridModalState extends State<ExportDataGridModal> {
                                         .elevatedButtonTheme
                                         .style!
                                         .copyWith(backgroundColor: MaterialStateProperty.all(const Color.fromRGBO(243, 243, 243, 1.0)))
-                                    : ElevatedButton.styleFrom(backgroundColor: const Color.fromRGBO(243, 243, 243, 1.0)),
+                                    : ElevatedButton.styleFrom(primary: const Color.fromRGBO(243, 243, 243, 1.0)),
                             child: const Text(
                               "CANCEL",
                               style: TextStyle(color: Color.fromRGBO(105, 105, 105, 1)),
@@ -410,7 +410,7 @@ class _ExportDataGridModalState extends State<ExportDataGridModal> {
                                           .elevatedButtonTheme
                                           .style!
                                           .copyWith(backgroundColor: MaterialStateProperty.all(widget.primaryColor))
-                                      : ElevatedButton.styleFrom(backgroundColor: widget.primaryColor),
+                                      : ElevatedButton.styleFrom(primary: widget.primaryColor),
                               child: const Text(
                                 "EXPORT DATA",
                                 style: TextStyle(color: Colors.white),
@@ -446,7 +446,7 @@ class _ExportDataGridModalState extends State<ExportDataGridModal> {
                                       .elevatedButtonTheme
                                       .style!
                                       .copyWith(backgroundColor: MaterialStateProperty.all(widget.primaryColor))
-                                  : ElevatedButton.styleFrom(backgroundColor: widget.primaryColor),
+                                  : ElevatedButton.styleFrom(primary: widget.primaryColor),
                           child: const Text(
                             "EXPORT DATA",
                             style: TextStyle(color: Colors.white),
