@@ -283,7 +283,7 @@ class DataSourceApi extends DataSource {
   final Map<String, List<String>>? query;
 
   /// provider for the token
-  final String? Function()? tokenProvider;
+  final Future<String?> Function()? tokenProvider;
 
   /// Function to call if token has expired/is invalid.
   final Function? onAuthError;
@@ -329,7 +329,7 @@ class DataSourceApi extends DataSource {
     bool searchInUse = false;
     String? token;
     if (tokenProvider != null) {
-      token = tokenProvider!();
+      token = await tokenProvider!();
     }
 
     print("Getting: $path");
